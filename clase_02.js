@@ -73,8 +73,5 @@ for(let index in products_arr){
     products.push(new Product(products_arr[index].title, products_arr[index].description, products_arr[index].price, products_arr[index].thumbnail, products_arr[index].code, products_arr[index].stock));
 }
 
-let product1 = new Product('Manzana Roja', 'Deliciosa manzana roja, producto importado. Precio por kilogramo.', 2500.00, 'https://www.recetasnestle.com.mx/sites/default/files/inline-images/tipos-de-manzana-royal-gala.jpg', 'PR0001', 20);
-let product2 = new Product('Durazno', 'Durazno recolectado en la sierra oriental, organico y de gran dulzura.', 4500.00, 'https://img.freepik.com/fotos-premium/hoja-durazno-fresco-aislado-blanco_299651-1556.jpg?w=2000', 'PR0001', 50);
-
 let productmanager = new ProductManager(products)
 console.log(productmanager)
