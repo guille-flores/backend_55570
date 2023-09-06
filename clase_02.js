@@ -1,19 +1,63 @@
 // DEFINING THE PRODUCT MANAGER CLASS TO STORE/MANAGE EVERY PRODUCT THAT GETS ADDED
 class ProductManager{
-    constructor(products){
-        this._products = products;
+    constructor(){
+        this._products = [];
+    }
+
+    //return all products stored
+    getProducts(){
+        return this._products;
+    }
+
+    addProduct(product){
+        //We will check if there is any product matching the new product code. 
+        //If there is no match, then we will add it. If they match, we won't add it,
+        if(this._products.filter(e => e.getCode() == product.getCode()).length == 0){
+            //first, we will get the ids in the products
+            let ids = this._products.map(item => {return item.id});
+
+            //then, we will get the max id from the products
+            let max_id = 0;
+            if(ids.length > 0){
+                max_id = Math.max(...ids);
+            }
+            product.id = max_id + 1; // add 1 to ensure we don't repeat the max currently available
+            
+            this._products.push(product); // push the new product
+            
+        }else{
+            console.log(`\nThis product (CODE ${product.code}) is already in the Product Manager object.\n`)
+        }
+    }
+
+    getProductByID(id){
+        let found = this._products.filter(e => e.id == id);
+        if(found.length > 0){
+            console.log(found[0])
+            return found[0];
+        }else{
+            throw new Error(`ID ${id} not found`);
+        }
     }
 }
 
 // DEFINING THE PRODUCT CLASS TO CREATE NEW PRODUCTS 
 class Product{
     constructor(title, description, price, thumbnail, code, stock) {
-        this._title = title;
-        this._description = description;
-        this._price = price;
-        this._thumbnail = thumbnail;
-        this._code = code;
-        this._stock = stock;
+        if(title && description && price && thumbnail && code && !isNaN(stock)){
+            this._title = title;
+            this._description = description;
+            this._price = price;
+            this._thumbnail = thumbnail;
+            this._code = code;
+            this._stock = stock;
+        }else{
+            throw new Error('There is a missing field in the product to add.');
+        }
+    }
+
+    getCode(){
+        return this._code;
     }
 }
 
@@ -59,7 +103,15 @@ const products_json = `{
             "thumbnail": "https://m.media-amazon.com/images/I/611EW6z8sZL._AC_SL1500_.jpg",
             "code": "PR-0005",
             "stock": 3
-        }      
+        }, 
+        {
+            "title": "TP-Link Deco WiFi Mesh",
+            "description": "Sistema WiFi de Malla Para todo el Hogar: Antivirus, Roaming Continuo, Cobertura de hasta 5,500 Pies Cuadrados y Más de 100 Dispositivos (Deco M5 3 Pack).",
+            "price": 2968.00,
+            "thumbnail": "https://m.media-amazon.com/images/I/611EW6z8sZL._AC_SL1500_.jpg",
+            "code": "PR-0005",
+            "stock": 3
+        }          
     ]
 }`;
 
@@ -68,10 +120,18 @@ const products_obj = JSON.parse(products_json);
 const products_arr = products_obj.products;
 
 // OBTAINING EVERY PRODUCT FROM THE JSON OBJECT (LOOP THROUGH IT)
-let products = []; //defining an array to push the new products created
+let productmanager = new ProductManager();
+console.log('GET PRODUCTS METHOD 1: ')
+console.log(productmanager.getProducts())
 for(let index in products_arr){
-    products.push(new Product(products_arr[index].title, products_arr[index].description, products_arr[index].price, products_arr[index].thumbnail, products_arr[index].code, products_arr[index].stock));
+    productmanager.addProduct(new Product(products_arr[index].title, products_arr[index].description, products_arr[index].price, products_arr[index].thumbnail, products_arr[index].code, products_arr[index].stock))
 }
 
-let productmanager = new ProductManager(products)
-console.log(productmanager)
+//return the added products
+console.log('\n\nGET PRODUCTS METHOD 2: ')
+console.log(productmanager.getProducts())
+
+//look for a specific product ID
+console.log('\n\nGET PRODUCT BY ID METHOD: ')
+productmanager.getProductByID(4)
+
