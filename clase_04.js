@@ -10,7 +10,7 @@ class ProductManager{
     getProducts(){
         const fs = require('node:fs');
         //if the file exist, then it could have some product, so we will check the file
-        if (fs.existsSync(this.path)) { 
+        if (fs.existsSync(this.path) && fs.readFileSync(this.path).length !== 0) { 
             let data = fs.readFileSync(this.path, { encoding: 'utf8', flag: 'r' });
             //wait for the products to load and parse them as list instead of STRING
             this._products = JSON.parse(data) 
@@ -43,7 +43,7 @@ class ProductManager{
     getProductByID(id){
         const fs = require('node:fs');
         //if the file exist, then it could have some product, so we will check the file
-        if (fs.existsSync(this.path)) { 
+        if (fs.existsSync(this.path) && fs.readFileSync(this.path).length !== 0) { 
             let data = fs.readFileSync(this.path, { encoding: 'utf8', flag: 'r' });
             //wait for the products to load and parse them as list instead of STRING
             this._products = JSON.parse(data) 
@@ -54,7 +54,7 @@ class ProductManager{
             console.log(found)
             return found;
         }else{
-            throw new Error(`ID ${id} not found`);
+            throw new Error(`ID ${id} not found. It may have been deleted.`);
         }
     }
 
@@ -62,19 +62,19 @@ class ProductManager{
     deleteProduct(id){
         const fs = require('node:fs');
         //if the file exist, then it could have some product, so we will check the file
-        if (fs.existsSync(this.path)) { 
+        if (fs.existsSync(this.path) && fs.readFileSync(this.path).length !== 0) { 
             let data = fs.readFileSync(this.path, { encoding: 'utf8', flag: 'r' });
             //wait for the products to load and parse them as list instead of STRING
             this._products = JSON.parse(data) 
         }else{
-            throw new Error(`The Product Manager has no producst! ID ${id} not found.`);
+            throw new Error(`The Product Manager has no products! ID ${id} doesn't exist in Product Manager.`);
             // if the file doesn't exists, then we haven't added any product (is empty, so we cannot delete any product).
         }
         
         //if no error thrown, we have producst, so we look for the specific one with the same ID
         let index_found = this._products.findIndex(e => e.id === id);
-        if(index_found >= 0){
-            //if the product was found, it will have an index != -1 (or greater than -1)
+        if(index_found !== -1){
+            //if the product was found, it will have an index != -1
             //we use the splice method to remove the items from an array in the given index (and just 1 item, so we don't remove other items).
             this._products.splice(index_found, 1);
 
@@ -85,6 +85,37 @@ class ProductManager{
         }else{
             //if we have the product file but no product matches the given ID
             throw new Error(`ID ${id} not found`);
+        }
+    }
+
+    updateProduct(id, modifications){
+        const fs = require('node:fs');
+        //if the file exist, then it could have some product, so we will check the file
+        if (fs.existsSync(this.path) && fs.readFileSync(this.path).length !== 0) { 
+            let data = fs.readFileSync(this.path, { encoding: 'utf8', flag: 'r' });
+            //wait for the products to load and parse them as list instead of STRING
+            this._products = JSON.parse(data) 
+        }else{
+            throw new Error(`The Product Manager has no products! ID ${id} not found. Please create the product with the method addProduct().`);
+            // if the file doesn't exists, then we haven't added any product (is empty, so we cannot delete any product).
+        }
+        
+        //if no error thrown, we have producst, so we look for the specific one with the same ID
+        let index_found = this._products.findIndex(e => e.id === id);
+        if(index_found !== -1){
+            //if the product was found, it will have an index != -1
+            //now we will define the modifications. As we defined them as objects, we can iterate in their keys in a simple manner
+            let target = this._products[index_found];
+            for(const key in modifications){
+                target[key] = modifications[key]; //modifying the value of the product with the new values
+            }
+            this._products[index_found] = target; //assigning the changes in the corresponding index to replace the product with this new changes
+            fs.writeFileSync(this.path, JSON.stringify(this._products));
+            console.log(this._products[index_found])
+            return this._products[index_found]
+        }else{
+            //if we have the product file but no product matches the given ID
+            throw new Error(`ID ${id} not found, cannot update the product. Please create the product with the method addProduct().`);
         }
     }
 }
@@ -150,10 +181,11 @@ const products_arr = products_obj.products;
 
 //write the path of the file that will contain or that contains the products to manage
 let productmanager = new ProductManager(file='./products.json'); 
+
 console.log('GET PRODUCTS METHOD 1: ')
 console.log(productmanager.getProducts())
 
-/*
+
 for(let index in products_arr){
     // OBTAINING EVERY PRODUCT FROM THE JSON OBJECT (LOOP THROUGH IT)
     productmanager.addProduct(products_arr[index].title, products_arr[index].description, products_arr[index].price, products_arr[index].thumbnail, products_arr[index].code, products_arr[index].stock);
@@ -166,6 +198,17 @@ console.log('\n\nGET PRODUCT BY ID METHOD: ')
 productmanager.getProductByID(4)
 
 //look for a specific product ID
-console.log('\n\DELETE PRODUCT BY ID METHOD: ')
+console.log('\n\nDELETE PRODUCT BY ID METHOD: ')
 productmanager.deleteProduct(4)
-*/
+
+
+//We will define some values that we want to modify form the product
+let modifyobject = {
+    "title": "Echo Dot (2da generación)",
+    "price": 799.99
+};
+console.log('\n\nUPDATE PRODUCTS METHOD: ')
+console.log('before modifications: ')
+productmanager.getProductByID(3)
+console.log('after modifications: ') 
+productmanager.updateProduct(3, modifyobject)
