@@ -1,4 +1,5 @@
 // DEFINING THE PRODUCT MANAGER CLASS TO STORE/MANAGE EVERY PRODUCT THAT GETS ADDED
+const fs = require('node:fs');
 class ProductManager{
     constructor(file){
         this._products = [];
@@ -7,19 +8,13 @@ class ProductManager{
     }
 
     //return all products stored
-    getProducts(){
-        const fs = require('node:fs');
-        //if the file exist, then it could have some product, so we will check the file
-        if (fs.existsSync(this.path) && fs.readFileSync(this.path).length !== 0) { 
-            let data = fs.readFileSync(this.path, { encoding: 'utf8', flag: 'r' });
-            //wait for the products to load and parse them as list instead of STRING
-            this._products = JSON.parse(data) 
-        }
-        return this._products;
+    async getProducts() {
+        const content = await fs.promises.readFile(this.path, 'utf-8');
+        const data = JSON.parse(content);
+        return data;    
     }
 
     addProduct(title, description, price, thumbnail, code, stock){
-        const fs = require('node:fs');
         //We will check if there is any product matching the new product code. 
         //If there is no match, then we will add it. If they match, we won't add it,
         if(!this._products.find(e => e.code === code)){
@@ -34,91 +29,68 @@ class ProductManager{
             let new_id = max_id + 1; // add 1 to ensure we don't repeat the max currently available
             
             this._products.push({id: new_id, title: title, description: description, price: price, thumbnail: thumbnail, code: code, stock: stock}); // push the new product
-            fs.writeFileSync(this.path, JSON.stringify(this._products));
+            fs.writeFile(this.path, JSON.stringify(this._products), (err) => {
+                if (err) {
+                  console.log(err);
+                }
+                console.log("Product Added!");
+              });
         }else{
             console.log(`\nThis product (CODE ${code}) is already in the Product Manager object.\n`)
         }
     }
 
-    getProductByID(id){
-        const fs = require('node:fs');
-        //if the file exist, then it could have some product, so we will check the file
-        if (fs.existsSync(this.path) && fs.readFileSync(this.path).length !== 0) { 
-            let data = fs.readFileSync(this.path, { encoding: 'utf8', flag: 'r' });
-            //wait for the products to load and parse them as list instead of STRING
-            this._products = JSON.parse(data) 
-        }
-
-        let found = this._products.find(e => e.id === id);
+    async getProductByID(id){
+        const res = await this.getProducts(); //waiting to obtain the products
+        let found = res.find(e => e.id === id); //then we will find the matching id
         if(found){
-            console.log(found)
-            return found;
+            return found //if found, we will return it.
         }else{
             throw new Error(`ID ${id} not found. It may have been deleted.`);
         }
+        ;
     }
 
 
-    deleteProduct(id){
-        const fs = require('node:fs');
-        //if the file exist, then it could have some product, so we will check the file
-        if (fs.existsSync(this.path) && fs.readFileSync(this.path).length !== 0) { 
-            let data = fs.readFileSync(this.path, { encoding: 'utf8', flag: 'r' });
-            //wait for the products to load and parse them as list instead of STRING
-            this._products = JSON.parse(data) 
-        }else{
-            throw new Error(`The Product Manager has no products! ID ${id} doesn't exist in Product Manager.`);
-            // if the file doesn't exists, then we haven't added any product (is empty, so we cannot delete any product).
-        }
-        
-        //if no error thrown, we have producst, so we look for the specific one with the same ID
-        let index_found = this._products.findIndex(e => e.id === id);
+    async deleteProduct(id){
+        const res = await this.getProducts(); //waiting to obtain the products
+        let index_found = res.findIndex(e => e.id === id);
         if(index_found !== -1){
             //if the product was found, it will have an index != -1
             //we use the splice method to remove the items from an array in the given index (and just 1 item, so we don't remove other items).
-            this._products.splice(index_found, 1);
+            res.splice(index_found, 1);
 
             //we update the products file to reflect the changes
-            fs.writeFileSync(this.path, JSON.stringify(this._products));
-            console.log(this._products)
-            return this._products
+            fs.writeFileSync(this.path, JSON.stringify(res));
+            return res
         }else{
             //if we have the product file but no product matches the given ID
             throw new Error(`ID ${id} not found`);
         }
     }
 
-    updateProduct(id, modifications){
-        const fs = require('node:fs');
-        //if the file exist, then it could have some product, so we will check the file
-        if (fs.existsSync(this.path) && fs.readFileSync(this.path).length !== 0) { 
-            let data = fs.readFileSync(this.path, { encoding: 'utf8', flag: 'r' });
-            //wait for the products to load and parse them as list instead of STRING
-            this._products = JSON.parse(data) 
-        }else{
-            throw new Error(`The Product Manager has no products! ID ${id} not found. Please create the product with the method addProduct().`);
-            // if the file doesn't exists, then we haven't added any product (is empty, so we cannot delete any product).
-        }
+    async updateProduct(id, modifications){
+        const res = await this.getProducts(); //waiting to obtain the products
         
         //if no error thrown, we have producst, so we look for the specific one with the same ID
-        let index_found = this._products.findIndex(e => e.id === id);
+        let index_found = res.findIndex(e => e.id === id);
         if(index_found !== -1){
             //if the product was found, it will have an index != -1
             //now we will define the modifications. As we defined them as objects, we can iterate in their keys in a simple manner
-            let target = this._products[index_found];
+            let target = res[index_found];
             for(const key in modifications){
                 target[key] = modifications[key]; //modifying the value of the product with the new values
             }
-            this._products[index_found] = target; //assigning the changes in the corresponding index to replace the product with this new changes
-            fs.writeFileSync(this.path, JSON.stringify(this._products));
-            console.log(this._products[index_found])
-            return this._products[index_found]
+            res[index_found] = target; //assigning the changes in the corresponding index to replace the product with this new changes
+            fs.writeFileSync(this.path, JSON.stringify(res));
+            return res[index_found]
         }else{
             //if we have the product file but no product matches the given ID
             throw new Error(`ID ${id} not found, cannot update the product. Please create the product with the method addProduct().`);
         }
     }
 }
+
 
 
 // JSON OBJECT
@@ -182,33 +154,40 @@ const products_arr = products_obj.products;
 //write the path of the file that will contain or that contains the products to manage
 let productmanager = new ProductManager(file='./products.json'); 
 
-console.log('GET PRODUCTS METHOD 1: ')
-console.log(productmanager.getProducts())
+productmanager.getProducts().then((res) => {
+    console.log('GET PRODUCTS METHOD 1: '); 
+    console.log(res)
+}); 
 
 
 for(let index in products_arr){
     // OBTAINING EVERY PRODUCT FROM THE JSON OBJECT (LOOP THROUGH IT)
     productmanager.addProduct(products_arr[index].title, products_arr[index].description, products_arr[index].price, products_arr[index].thumbnail, products_arr[index].code, products_arr[index].stock);
 }
-console.log('\n\nGET PRODUCTS METHOD 2: ')
-console.log(productmanager.getProducts())
+productmanager.getProducts().then((res) => {
+    console.log('GET PRODUCTS METHOD 2: '); 
+    console.log(res)
+}); 
 
 //look for a specific product ID
-console.log('\n\nGET PRODUCT BY ID METHOD: ')
-productmanager.getProductByID(4)
+productmanager.getProductByID(4).then((found) => {
+    console.log('GET PRODUCT BY ID METHOD: ')
+    console.log(found)
+}); 
 
-//look for a specific product ID
-console.log('\n\nDELETE PRODUCT BY ID METHOD: ')
-productmanager.deleteProduct(4)
 
+//delete a specific product ID
+productmanager.deleteProduct(4).then((found) => {
+    console.log('DELETE PRODUCT BY ID METHOD: ')
+    console.log(found)
+});
 
 //We will define some values that we want to modify form the product
 let modifyobject = {
     "title": "Echo Dot (2da generación)",
     "price": 799.99
 };
-console.log('\n\nUPDATE PRODUCTS METHOD: ')
-console.log('before modifications: ')
-productmanager.getProductByID(3)
-console.log('after modifications: ') 
-productmanager.updateProduct(3, modifyobject)
+productmanager.updateProduct(3, modifyobject).then((found) => {
+    console.log('UPDATE PRODUCT BY ID METHOD: ')
+    console.log(found)
+});
