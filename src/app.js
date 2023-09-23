@@ -4,7 +4,7 @@ const express = require('express');
 //setting up the express server and port
 const app = express();
 app.use(express.urlencoded({extended:true}))
-const port = 3000
+const port = 8080;
 
 // DEFINING THE PRODUCT MANAGER CLASS TO STORE/MANAGE EVERY PRODUCT THAT GETS ADDED
 const fs = require('node:fs');
