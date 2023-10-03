@@ -1,6 +1,16 @@
+const fs = require('node:fs');
 class ProductManager{
     constructor(file){
-        this._products = [];
+        if (fs.existsSync(file)) {
+            if (fs.readFileSync(file, 'utf-8').length === 0) {
+                this._products = [];
+            } else {
+                this._products = JSON.parse(fs.readFileSync(file, 'utf-8'));
+            }
+        }else{
+            this._products = [];
+            fs.writeFile(file, JSON.stringify(this._products), (err) => err && console.error(err));
+        }
         //it will receive the path of the file that will contain or that contains the products to manage
         this.path = file;
     }
@@ -31,7 +41,7 @@ class ProductManager{
                 if (err) {
                   console.log(err);
                 }
-                console.log("Product Added!");
+                console.log(`Product Added with ID: ${new_id}!`);
               });
         }else{
             console.log(`\nThis product (CODE ${code}) is already in the Product Manager object.\n`)
@@ -46,7 +56,6 @@ class ProductManager{
         }else{
             throw new Error(`ID ${id} not found. It may have been deleted.`);
         }
-        ;
     }
 
 
@@ -88,3 +97,5 @@ class ProductManager{
         }
     }
 }
+
+module.exports = ProductManager
