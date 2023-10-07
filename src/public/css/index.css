@@ -1,0 +1,22 @@
+label {
+    display: block;
+}
+
+label span {
+    display: inline-block;
+    text-align: left;
+    width:35vh;
+    margin: 10px;
+}
+
+button {
+    min-width: 60px;
+}
+
+p, span, button, label {
+    font-size: 22px;
+}
+
+input {
+    font-size: 20px;
+}

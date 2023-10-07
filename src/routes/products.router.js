@@ -122,6 +122,7 @@ router.put('/:pid', (req, res)=>{
 })
 
 router.delete('/:pid', (req, res)=>{
+    /* To receive the products in the JSON body instead of the URL endpoint
     const product_json = req.body;
     //for simplicity, we will allow and suppose that the user can push multiple products in a single JSON.
     //the multiple products should come as: "{products":[{product 1}, {products 2}, ..., {product n}]}
@@ -142,6 +143,10 @@ router.delete('/:pid', (req, res)=>{
     }else{
         productmanager.deleteProduct(product.id);
     }
+    */
+    let product = req.params.pid;
+    console.log(typeof parseInt(product))
+    productmanager.deleteProduct(parseInt(product));
     res.json({
         info:{
             status: 200,

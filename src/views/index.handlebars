@@ -1,0 +1,16 @@
+<div>
+  <h1>¡Hola, {{user.name}}!</h1>
+  {{#if isAdmin}}
+    {{#each food}}
+    <div>
+      <p>{{this.name}} ${{this.price}}</p>
+    </div>
+    {{/each}}
+  {{else}}
+    <div>
+      <p>Sorry, you don't have permission to see the list of foods and their price.</p>
+    </div>
+  {{/if}}
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/index.js"></script>

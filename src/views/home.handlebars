@@ -1,0 +1,85 @@
+<div>
+  <h1>Welcome!</h1>
+  <button onclick="redirectFunction()">Click to see updated products (real time)</button>
+  <div style="margin: 20px; padding: 20px; border: thin solid black; background-color:aquamarine; text-align: center;";>
+    <h2>Add a product</h2>
+    <form id = "add-form" action = "">
+      <label>
+        <span>Product Name (Title):</span>
+        <input label="title" placeholder="product name" type="text" id="title" required>
+      </label>
+      <label>
+        <span>Product Code:</span>
+        <input label="code" placeholder="product code" type="text" id="code" required>
+      </label>
+      <label>
+        <span>Description:</span>
+        <input label="description" placeholder="product description" type="text" id="description" required>
+      </label>
+      <label>
+        <span>Price (USD):</span>
+        <input label="price" placeholder="product price" type="number" id="price" min="0" required>
+      </label>
+      <label>
+        <span>Thumbnail (image URL/link):</span>
+        <input label="thumbnail" placeholder="product thumbnail" type="text" id="thumbnail" required>
+      </label>
+      <label>
+        <span>Stock:</span>
+        <input label="stock" placeholder="product stock" type="number" id="stock" min="0" required>
+      </label>
+      <button>Submit</button>
+    </form>
+  </div>
+  {{#if areProducts}}
+    <div style="margin: 20px; padding: 20px; border: thin solid black; background-color:lightcoral; text-align: center;";>
+      <h2>Remove a product</h2>
+      <form id = "delete-form" action = "">
+        <label>Write the ID number of the product to remove:</label>
+        <br>
+        <input label="id" placeholder="product id" type="number" id="pid" min="0" required>
+        <button>Remove</button>
+      </form>
+    </div>
+    {{#each products}}
+    <div style="margin: 20px; padding: 20px; border: thin solid black";>
+      <p>ID: {{this.id}} - Code: {{this.code}} - Title: {{this.title}}</p>
+      <p>Description: {{this.description}}</p>
+      <p>Price: ${{this.price}}</p>
+      <p>Stock: {{this.stock}}</p>
+      <img src="{{thumbnail}}" alt="" width="500">
+    </div>
+    {{/each}}
+  {{else}}
+    <div>
+      <p>Sorry, there are no products yet, please add a product in the form at the top of the page.</p>
+    </div>
+  {{/if}}
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/index.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+  $('#delete-form').submit(function(){
+    socket.emit('delete_pid', $('#pid').val());
+    return false
+  });
+
+  $('#add-form').submit(function(){
+    const product = {
+      'title': $('#title').val(),
+      'code': $('#code').val(),
+      'description': $('#description').val(),
+      'price': $('#price').val(),
+      'thumbnail': $('#thumbnail').val(),
+      'stock': $('#stock').val()
+    }
+    socket.emit('add_product', product);
+    return false
+  });
+</script>
+<script>
+  function redirectFunction(){
+    window.location = "/realtimeproducts" ;
+  }
+</script>

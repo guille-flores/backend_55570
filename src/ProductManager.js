@@ -25,6 +25,7 @@ class ProductManager{
     addProduct(title, description, price, thumbnail, code, stock){
         //We will check if there is any product matching the new product code. 
         //If there is no match, then we will add it. If they match, we won't add it,
+        
         if(!this._products.find(e => e.code === code)){
             //first, we will get the ids in the products
             let ids = this._products.map(item => {return item.id});
