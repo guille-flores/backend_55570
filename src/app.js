@@ -62,13 +62,5 @@ io.on('connection', socket => {
     fetch(destination, requestOptions)
       .then(() => console.log('Product successfully added!'));
   });
-  /*
-  socket.on('load_products', () => {
-    // IMPORTING THE PRODUCT MANAGER CLASS TO STORE/MANAGE EVERY PRODUCT THAT GETS ADDED
-    let ProductManager = require('./ProductManager.js');
-    let productmanager = new ProductManager(file='./products.json');
-    let products = productmanager._products
-    console.log(products)
-  });
-  */
+
 })
