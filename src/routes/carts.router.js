@@ -56,7 +56,7 @@ router.post('/:cid/product/:pid', async (req, res)=>{
 
         let cart = await cartsModel.find({_id: cid}).lean();
         let products = cart[0].products
-        products.push(pid)
+        products.push({id: pid, quantity: cart_json})
         //obtaining the current products in the cart
         let result = await cartsModel.findOneAndUpdate({_id: cid}, {products: products}, {
             new: true
