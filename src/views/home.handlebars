@@ -36,14 +36,14 @@
     <form id = "delete-form" action = "">
       <label>Write the ID number of the product to remove:</label>
       <br>
-      <input label="id" placeholder="product id" type="number" id="pid" min="0" required>
+      <input label="id" placeholder="product id" type="text" id="pid" required>
       <button>Remove</button>
     </form>
   </div>
   {{#if areProducts}}
     {{#each products}}
     <div style="margin: 20px; padding: 20px; border: thin solid black";>
-      <p>ID: {{this.id}} - Code: {{this.code}} - Title: {{this.title}}</p>
+      <p>ID: {{this._id}} - Code: {{this.code}} - Title: {{this.title}}</p>
       <p>Description: {{this.description}}</p>
       <p>Price: ${{this.price}}</p>
       <p>Stock: {{this.stock}}</p>
@@ -62,6 +62,12 @@
 <script>
   $('#delete-form').submit(function(){
     socket.emit('delete_pid', $('#pid').val());
+    Swal.fire({
+      title: 'Delete Request Submitted!',
+      text: 'Please reload the page or navigate to the real-time products page to see the updated list of available products.',
+      icon: 'info',
+      confirmButtonText: 'Cool'
+    })
     return false
   });
 
@@ -75,6 +81,12 @@
       'stock': $('#stock').val()
     }
     socket.emit('add_product', product);
+    Swal.fire({
+      title: 'Product Submitted!',
+      text: 'Please reload the page or navigate to the real-time products page to see the updated list of available products.',
+      icon: 'info',
+      confirmButtonText: 'Cool'
+    })
     return false
   });
 </script>

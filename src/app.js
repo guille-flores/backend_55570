@@ -4,7 +4,8 @@ const productsRouter = require('./routes/products.router.js');
 const cartsRouter = require('./routes/carts.router.js');
 const viewsRouter = require('./routes/views.router.js');
 const realTimeProducts = require('./routes/realTimeProducts.router.js');
-const socket = require('socket.io')
+const socket = require('socket.io');
+const mongoose = require('mongoose');
 
 const exphbs = require('express-handlebars');
 const path = require('path');
@@ -25,6 +26,11 @@ app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 app.use(express.static(__dirname+'/public'));
 
+// connecting to Mongo DB 
+mongoose.connect('mongodb+srv://grf_backend:olnRpH9zo8tDjeFG@cluster0.nlbr7os.mongodb.net/ecommerce?retryWrites=true&w=majority')
+  .then(() => console.log('connected to DB!'))
+  .catch(error => console.log("Cannot connect to MongoDB: " + error))
+
 app.use('/api/products/', productsRouter)
 app.use('/api/carts/', cartsRouter)
 app.use('/', viewsRouter)
@@ -43,7 +49,7 @@ io.on('connection', socket => {
   });
   */
 
-  socket.on('delete_pid',data => {
+  socket.on('delete_pid', data => {
     const destination = 'http://localhost:' + port + '/api/products/'+data;
     
     //to send the delete request we use fetch
