@@ -7,6 +7,9 @@ const realTimeProducts = require('./routes/realTimeProducts.router.js');
 const socket = require('socket.io');
 const mongoose = require('mongoose');
 
+// calling the environment variables
+const config = require('./config.js');
+
 const exphbs = require('express-handlebars');
 const path = require('path');
 // Set up Express-Handlebars
@@ -21,22 +24,23 @@ const hbs = exphbs.create({
 const app = express();
 app.use(express.urlencoded({extended:true}))
 app.use(express.json());
-const port = 8080;
+const port = config.PORT;
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 app.use(express.static(__dirname+'/public'));
 
 // connecting to Mongo DB 
-mongoose.connect('mongodb+srv://grf_backend:olnRpH9zo8tDjeFG@cluster0.nlbr7os.mongodb.net/ecommerce?retryWrites=true&w=majority')
+mongoose.connect('mongodb+srv://'+config.MONG_USER+':'+config.MONGO_SECRET+'@cluster0.nlbr7os.mongodb.net/'+config.MONGO_DB+'?retryWrites=true&w=majority')
   .then(() => console.log('connected to DB!'))
   .catch(error => console.log("Cannot connect to MongoDB: " + error))
+
 
 app.use('/api/products/', productsRouter)
 app.use('/api/carts/', cartsRouter)
 app.use('/', viewsRouter)
 app.use('/realtimeproducts', realTimeProducts)
 const httpServer = app.listen(port, () => {
-  console.log(`Express running on local port: ${port}`)
+  console.log(`Express running on local port: ${config.PORT}`)
 })
 
 const io = new socket.Server(httpServer);
