@@ -8,7 +8,7 @@ const socket = require('socket.io');
 const mongoose = require('mongoose');
 
 // calling the environment variables
-const config = require('./config.js');
+const config = require('./config.env');
 
 const exphbs = require('express-handlebars');
 const path = require('path');
