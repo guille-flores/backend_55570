@@ -56,12 +56,25 @@ router.post('/:cid/product/:pid', async (req, res)=>{
         const pid = req.params.pid;
 
         let cart = await cartsModel.find({_id: cid}).lean();
-        let products = cart[0].products
-        products.push({id: pid, quantity: cart_json.quantity})
+        
         //obtaining the current products in the cart
-        let result = await cartsModel.findOneAndUpdate({_id: cid}, {products: products}, {
-            new: true
-        });
+        let products = cart[0].products;
+
+        //if the product already exists, we will just modify the quantity, not add another same product
+        let existing_product = products.find((element) => element._id == pid);
+        if(existing_product){
+            let newProd = products.map((element) => {
+                if(element._id == pid){
+                    return {_id: element._id, quantity:cart_json.quantity}
+                }else{
+                    return element
+                }
+            });
+            var result = await cartsModel.findOneAndUpdate({_id: cid}, {products: newProd}, {new: true});
+        }else{
+            products.push({_id: pid, quantity: cart_json.quantity});
+            var result = await cartsModel.findOneAndUpdate({_id: cid}, {products: products}, {new: true});
+        }
         res.json({
             info:{
                 status: 200,

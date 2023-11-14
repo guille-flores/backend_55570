@@ -5,7 +5,16 @@ const cartsCollection = 'carts'; //collection name in MongoDB
 // defining the products schema for the collection
 const cartsSchema = new mongoose.Schema({
     products: {
-        type: Array,
+        type: [{
+            product:{
+                type: mongoose.Schema.ObjectId,
+                ref:"products"
+            },
+            quantity:{
+                type: Number,
+                default: 0
+            }
+        }],
         required: false,
         default: [] //default is to create an empty array of products for the cart
     }
