@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const cartsModel = require('../dao/models/carts.model.js');
+const productsModel = require('../dao/models/products.model.js');
 
 router.post('/', async (req, res)=>{
     let new_cart = await cartsModel.create({})
@@ -56,7 +57,7 @@ router.post('/:cid/product/:pid', async (req, res)=>{
 
         let cart = await cartsModel.find({_id: cid}).lean();
         let products = cart[0].products
-        products.push({id: pid, quantity: cart_json})
+        products.push({id: pid, quantity: cart_json.quantity})
         //obtaining the current products in the cart
         let result = await cartsModel.findOneAndUpdate({_id: cid}, {products: products}, {
             new: true

@@ -7,32 +7,47 @@ const productsModel = require('../dao/models/products.model.js');
 //to see all products or a limited number of products
 router.get('/', async (req, res) => {
     try{
-        let products = await productsModel.find();
+        let query = req.query;
+        let {limit, sort} = query;
+        
+        
+        if(typeof sort === 'string' && (sort.toLowerCase() == 'asc' || sort.toLowerCase() == 'desc')){
+            if(sort.toLowerCase() == 'asc'){
+                var products = await productsModel.find().sort({'price': 'asc'}).lean();
+            }else{
+                var products = await productsModel.find().sort({'price': 'desc'}).lean();
+            }
+        }else{
+            var products = await productsModel.find().lean();
+        }
+        
         //res.send({result:"success", payload:products})
 
-        let query = req.query;
-        let {limit} = query;
         if(!limit || isNaN(limit)){
             // If the query param has limit, and if the limit is not a number, we will return the filtered products (limited to the given amount)
             //return res.send(products)
-            res.json({
-                info: {
-                    status: 200,
-                    message: 'success'
-                },
+            
+            res.render('home', {
+                areProducts: products.length > 0,
                 products: products
-            })
+            });
         }else{
             limit = Math.floor(limit); //in case user enters a double/float number
             let limited_products = products.slice(0, limit);
             //res.send(limited_products)
+            /*
             res.json({
                 info: {
                     status: 200,
                     message: 'success'
                 },
                 products: limited_products
-            })
+            });
+            */
+            res.render('home', {
+                areProducts: limited_products.length > 0,
+                products: limited_products
+            });
         }
     }catch(error){
         console.log("Cannot obtain the products with Mongoose: " + error)
