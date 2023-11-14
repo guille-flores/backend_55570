@@ -1,36 +1,39 @@
 //defining the express module to set up a server
-const express = require('express');
-const productsRouter = require('./routes/products.router.js'); 
-const cartsRouter = require('./routes/carts.router.js');
-const viewsRouter = require('./routes/views.router.js');
-const realTimeProducts = require('./routes/realTimeProducts.router.js');
-const socket = require('socket.io');
-const mongoose = require('mongoose');
+import express, { urlencoded, json } from 'express';
+import productsRouter from './routes/products.router.js'; 
+import cartsRouter from './routes/carts.router.js';
+import viewsRouter from './routes/views.router.js';
+import realTimeProducts from './routes/realTimeProducts.router.js';
+import { Server } from 'socket.io';
+import { connect } from 'mongoose';
 
 // calling the environment variables
-const config = require('./config.env');
+import { PORT, MONG_USER, MONGO_SECRET, MONGO_DB } from './config.js';
 
-const exphbs = require('express-handlebars');
-const path = require('path');
+import { create } from 'express-handlebars';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 // Set up Express-Handlebars
-const hbs = exphbs.create({
+const hbs = create({
     extname: 'handlebars', // Specify the file extension for your templates
-    layoutsDir: path.join(__dirname, 'views', 'layouts'), // Specify the layouts directory
+    layoutsDir: join(__dirname, 'views', 'layouts'), // Specify the layouts directory
     defaultLayout: 'main', // Specify the default layout template
 });
 
 
 //setting up the express server and port
 const app = express();
-app.use(express.urlencoded({extended:true}))
-app.use(express.json());
-const port = config.PORT;
+app.use(urlencoded({extended:true}))
+app.use(json());
+const port = PORT;
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
-app.use(express.static(__dirname+'/public'));
+//app.use(static(__dirname+'/public'));
 
 // connecting to Mongo DB 
-mongoose.connect('mongodb+srv://'+config.MONG_USER+':'+config.MONGO_SECRET+'@cluster0.nlbr7os.mongodb.net/'+config.MONGO_DB+'?retryWrites=true&w=majority')
+connect('mongodb+srv://'+MONG_USER+':'+MONGO_SECRET+'@cluster0.nlbr7os.mongodb.net/'+MONGO_DB+'?retryWrites=true&w=majority')
   .then(() => console.log('connected to DB!'))
   .catch(error => console.log("Cannot connect to MongoDB: " + error))
 
@@ -40,10 +43,10 @@ app.use('/api/carts/', cartsRouter)
 app.use('/', viewsRouter)
 app.use('/realtimeproducts', realTimeProducts)
 const httpServer = app.listen(port, () => {
-  console.log(`Express running on local port: ${config.PORT}`)
+  console.log(`Express running on local port: ${PORT}`)
 })
 
-const io = new socket.Server(httpServer);
+const io = new Server(httpServer);
 app.set('io', io); //we will pass this socket so it can be used in the routers
 io.on('connection', socket => {
   /*

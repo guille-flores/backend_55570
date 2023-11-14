@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
+import { Schema, model } from 'mongoose';
 
 const productsCollection = 'products'; //collection name in MongoDB
 
 // defining the products schema for the collection
-const productsSchema = new mongoose.Schema({
+const productsSchema = new Schema({
     title: {
         type: String,
         required: true
@@ -38,5 +38,5 @@ const productsSchema = new mongoose.Schema({
 });
 
 // generating the product collection in the DB
-const productsModel = mongoose.model(productsCollection, productsSchema);
-module.exports = productsModel;
+const productsModel = model(productsCollection, productsSchema);
+export default productsModel;

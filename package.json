@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "clase_01.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,6 +17,7 @@
     "express-session": "^1.17.3",
     "handlebars": "^4.7.8",
     "mongoose": "^8.0.0",
+    "mongoose-paginate-v2": "^1.7.4",
     "path": "^0.12.7",
     "socket.io": "^4.7.2"
   }

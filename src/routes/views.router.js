@@ -1,6 +1,6 @@
-const express = require('express');
-const router = express.Router();
-const productsModel = require('../dao/models/products.model.js');
+import { Router } from 'express';
+const router = Router();
+import productsModel from '../dao/models/products.model.js';
 
 //We will show the products via Handlebars
 router.get('/', async (req, res) => {
@@ -16,4 +16,4 @@ router.get('/', async (req, res) => {
     });
 });
 
-module.exports = router;
+export default router;

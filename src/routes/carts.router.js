@@ -1,9 +1,9 @@
 //defining the express module to set up a server
-const express = require('express');
-const router = express.Router();
+import { Router } from 'express';
+const router = Router();
 
-const cartsModel = require('../dao/models/carts.model.js');
-const productsModel = require('../dao/models/products.model.js');
+import cartsModel from '../dao/models/carts.model.js';
+import productsModel from '../dao/models/products.model.js';
 
 router.post('/', async (req, res)=>{
     let new_cart = await cartsModel.create({})
@@ -24,7 +24,7 @@ router.post('/', async (req, res)=>{
 router.get('/:cid', async (req, res) => {
     try{
         let cid = req.params.cid;
-        let cart = await cartsModel.find({_id: cid});
+        let cart = await cartsModel.find({_id: cid}).populate('products.product');
         if(cart.length > 0){
             //return res.send(product)
             res.json({
@@ -61,18 +61,18 @@ router.post('/:cid/product/:pid', async (req, res)=>{
         let products = cart[0].products;
 
         //if the product already exists, we will just modify the quantity, not add another same product
-        let existing_product = products.find((element) => element._id == pid);
+        let existing_product = products.find((element) => element.product == pid);
         if(existing_product){
             let newProd = products.map((element) => {
-                if(element._id == pid){
-                    return {_id: element._id, quantity:cart_json.quantity}
+                if(element.product == pid){
+                    return {product: element.product, quantity:cart_json.quantity}
                 }else{
                     return element
                 }
             });
             var result = await cartsModel.findOneAndUpdate({_id: cid}, {products: newProd}, {new: true});
         }else{
-            products.push({_id: pid, quantity: cart_json.quantity});
+            products.push({product: pid, quantity: cart_json.quantity});
             var result = await cartsModel.findOneAndUpdate({_id: cid}, {products: products}, {new: true});
         }
         res.json({
@@ -87,4 +87,4 @@ router.post('/:cid/product/:pid', async (req, res)=>{
     }
 })
 
-module.exports = router;
+export default router;
