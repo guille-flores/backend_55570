@@ -13,10 +13,17 @@ router.post('/', async (req, res)=>{
                 status: 200,
                 message: 'Cart created'
             },
-            cart: new_cart
+            payload: new_cart
         })
     }catch(error){
-        console.log("Cannot obtain the carts with Mongoose: " + error)
+        console.log("Cannot obtain the carts with Mongoose: " + error);
+        res.json({
+            info: {
+                status: 400,
+                message: 'error'
+            },
+            payload: error
+        });
     }
 })
 
@@ -32,20 +39,27 @@ router.get('/:cid', async (req, res) => {
                     status: 200,
                     message: 'success'
                 },
-                products: cart
+                payload: cart
             })
         }else{
             //res.send(`Product with id ${pid} not found.`)
             res.json({
                 info: {
-                    status: 201,
-                    message: 'success',
+                    status: 404,
+                    message: 'error',
                     details: 'Cart with id ' + cid + ' was not found.'
                 }
             })
         }
     }catch(error){
-        console.log("Cannot obtain the carts with Mongoose: " + error)
+        console.log("Cannot obtain the carts with Mongoose: " + error);
+        res.json({
+            info: {
+                status: 400,
+                message: 'error'
+            },
+            payload: error
+        });
     }
 })
 
@@ -56,34 +70,51 @@ router.post('/:cid/products/:pid', async (req, res)=>{
         const pid = req.params.pid;
 
         let cart = await cartsModel.find({_id: cid}).lean();
-        
-        //obtaining the current products in the cart
-        let products = cart[0].products;
+        if(cart.length > 0){
+            //obtaining the current products in the cart
+            let products = cart[0].products;
 
-        //if the product already exists, we will just modify the quantity, not add another same product
-        let existing_product = products.find((element) => element.product == pid);
-        if(existing_product){
-            let newProd = products.map((element) => {
-                if(element.product == pid){
-                    return {product: element.product, quantity:cart_json.quantity}
-                }else{
-                    return element
-                }
-            });
-            var result = await cartsModel.findOneAndUpdate({_id: cid}, {products: newProd}, {new: true});
+            //if the product already exists, we will just modify the quantity, not add another same product
+            let existing_product = products.find((element) => element.product == pid);
+            if(existing_product){
+                let newProd = products.map((element) => {
+                    if(element.product == pid){
+                        return {product: element.product, quantity:cart_json.quantity}
+                    }else{
+                        return element
+                    }
+                });
+                var result = await cartsModel.findOneAndUpdate({_id: cid}, {products: newProd}, {new: true});
+            }else{
+                products.push({product: pid, quantity: cart_json.quantity});
+                var result = await cartsModel.findOneAndUpdate({_id: cid}, {products: products}, {new: true});
+            }
+            res.json({
+                info:{
+                    status: 200,
+                    message: 'Added the product ' + pid + ' to the cart ' + cid + '.'
+                },
+                payload: result
+            })
         }else{
-            products.push({product: pid, quantity: cart_json.quantity});
-            var result = await cartsModel.findOneAndUpdate({_id: cid}, {products: products}, {new: true});
+            //res.send(`Product with id ${pid} not found.`)
+            res.json({
+                info: {
+                    status: 404,
+                    message: 'error',
+                    details: 'Cart with id ' + cid + ' was not found.'
+                }
+            })
         }
-        res.json({
-            info:{
-                status: 200,
-                message: 'Added the product ' + pid + ' to the cart ' + cid + '.'
-            },
-            cart: result
-        })
     }catch(error){
-        console.log("Cannot obtain the carts with Mongoose: " + error)
+        console.log("Cannot obtain the carts with Mongoose: " + error);
+        res.json({
+            info: {
+                status: 400,
+                message: 'error'
+            },
+            payload: error
+        });
     }
 })
 
@@ -106,14 +137,21 @@ router.delete('/:cid', async (req, res)=>{
             //res.send(`Product with id ${pid} not found.`)
             res.json({
                 info: {
-                    status: 201,
-                    message: 'success',
+                    status: 404,
+                    message: 'error',
                     details: 'Cart with id ' + cid + ' was not found.'
                 }
             })
         }
     }catch(error){
-        console.log("Cannot obtain the products with Mongoose: " + error)
+        console.log("Cannot obtain the products with Mongoose: " + error);
+        res.json({
+            info: {
+                status: 400,
+                message: 'error'
+            },
+            payload: error
+        });
     }
 });
 
@@ -146,14 +184,21 @@ router.delete('/:cid/products/:pid', async (req, res)=>{
             //res.send(`Product with id ${pid} not found.`)
             res.json({
                 info: {
-                    status: 201,
-                    message: 'success',
+                    status: 404,
+                    message: 'error',
                     details: 'Cart with id ' + cid + ' was not found.'
                 }
             })
         }
     }catch(error){
-        console.log("Cannot obtain the products with Mongoose: " + error)
+        console.log("Cannot obtain the products with Mongoose: " + error);
+        res.json({
+            info: {
+                status: 400,
+                message: 'error'
+            },
+            payload: error
+        });
     }
 });
 

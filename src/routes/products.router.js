@@ -78,7 +78,14 @@ router.get('/', async (req, res) => {
             });
         }
     }catch(error){
-        console.log("Cannot obtain the products with Mongoose: " + error)
+        console.log("Cannot obtain the products with Mongoose: " + error);
+        res.json({
+            info: {
+                status: 400,
+                message: 'error'
+            },
+            payload: error
+        });
     }
 })
 
@@ -154,7 +161,14 @@ router.get('/json', async (req, res) => {
             
         }
     }catch(error){
-        console.log("Cannot obtain the products with Mongoose: " + error)
+        console.log("Cannot obtain the products with Mongoose: " + error);
+        res.json({
+            info: {
+                status: 400,
+                message: 'error'
+            },
+            payload: error
+        });
     }
 });
 
@@ -180,6 +194,13 @@ router.get('/:pid', async (req, res) => {
         }
     }catch(error){
         console.log("Cannot obtain the products with Mongoose: " + error)
+        res.json({
+            info: {
+                status: 400,
+                message: 'error'
+            },
+            payload: error
+        });
     }
 })
 
@@ -210,7 +231,14 @@ router.get('/:pid/json', async (req, res) => {
             })
         }
     }catch(error){
-        console.log("Cannot obtain the products with Mongoose: " + error)
+        console.log("Cannot obtain the products with Mongoose: " + error);
+        res.json({
+            info: {
+                status: 400,
+                message: 'error'
+            },
+            payload: error
+        });
     }
 })
 
@@ -247,7 +275,14 @@ router.post('/', async (req, res)=>{
             product: result_arr
         })
     }catch(error){
-        console.log("Cannot obtain the products with Mongoose: " + error)
+        console.log("Cannot obtain the products with Mongoose: " + error);
+        res.json({
+            info: {
+                status: 400,
+                message: 'error'
+            },
+            payload: error
+        });
     }
 })
 
@@ -288,7 +323,14 @@ router.put('/:pid', async (req, res)=>{
             product: result_arr
         })
     }catch(error){
-        console.log("Cannot obtain the products with Mongoose: " + error)
+        console.log("Cannot obtain the products with Mongoose: " + error);
+        res.json({
+            info: {
+                status: 400,
+                message: 'error'
+            },
+            payload: error
+        });
     }
 })
 
@@ -304,7 +346,14 @@ router.delete('/:pid', async (req, res)=>{
             product: result
         })
     }catch(error){
-        console.log("Cannot obtain the products with Mongoose: " + error)
+        console.log("Cannot obtain the products with Mongoose: " + error);
+        res.json({
+            info: {
+                status: 400,
+                message: 'error'
+            },
+            payload: error
+        });
     }
 })
 
