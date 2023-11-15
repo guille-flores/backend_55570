@@ -34,7 +34,8 @@ const productsSchema = new Schema({
             validator : Number.isInteger,
             message   : '{VALUE} is not an integer value'
         }
-    }
+    },
+    category: String
 });
 
 // generating the product collection in the DB

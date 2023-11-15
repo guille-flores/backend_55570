@@ -63,17 +63,45 @@ router.get('/', async (req, res) => {
 router.get('/json', async (req, res) => {
     try{
         let query = req.query;
-        let {limit, sort} = query;
-        
-        
-        if(typeof sort === 'string' && (sort.toLowerCase() == 'asc' || sort.toLowerCase() == 'desc')){
-            if(sort.toLowerCase() == 'asc'){
-                var products = await productsModel.find().sort({'price': 'asc'}).lean();
+        let {limit, sort, category} = query;
+        let sorttype = null;
+        let products = [];
+        if(sort && category){
+            if(typeof sort === 'string' && (sort.toLowerCase() == 'asc' || sort.toLowerCase() == 'desc')){
+                if(sort.toLowerCase() == 'asc'){
+                    sorttype = 1;
+                }else{
+                    sorttype = -1;
+                }
+                products = await productsModel.aggregate([
+                    {$match: {'category': category}},
+                    {$sort: {'price': sorttype}}
+                ]);
             }else{
-                var products = await productsModel.find().sort({'price': 'desc'}).lean();
+                products = await productsModel.aggregate([
+                    {$match: {'category': category}}
+                ]);
+            }
+            
+        }else if(category){
+            products = await productsModel.aggregate([
+                {$match: {'category': category}}
+            ]);
+        }else if(sort){
+            if(typeof sort === 'string' && (sort.toLowerCase() == 'asc' || sort.toLowerCase() == 'desc')){
+                if(sort.toLowerCase() == 'asc'){
+                    sorttype = 1;
+                }else{
+                    sorttype = -1;
+                }
+                products = await productsModel.aggregate([
+                    {$sort: {'price': sorttype}}
+                ]);
+            }else{
+                products = await productsModel.find().lean();
             }
         }else{
-            var products = await productsModel.find().lean();
+            products = await productsModel.find().lean();
         }
         
         //res.send({result:"success", payload:products})
