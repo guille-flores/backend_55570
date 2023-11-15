@@ -49,7 +49,7 @@ router.get('/:cid', async (req, res) => {
     }
 })
 
-router.post('/:cid/product/:pid', async (req, res)=>{
+router.post('/:cid/products/:pid', async (req, res)=>{
     try{
         const cart_json = req.body;
         const cid = req.params.cid;
@@ -86,5 +86,75 @@ router.post('/:cid/product/:pid', async (req, res)=>{
         console.log("Cannot obtain the carts with Mongoose: " + error)
     }
 })
+
+
+router.delete('/:cid', async (req, res)=>{
+    try{
+        let cid = req.params.cid;
+        let cart = await cartsModel.find({_id: cid});
+        if(cart.length > 0){
+            // if the cart is found, we will delete all the products
+            var result = await cartsModel.findOneAndUpdate({_id: cid}, {products: []}, {new: true});
+            res.json({
+                info: {
+                    status: 200,
+                    message: 'success'
+                },
+                products: result
+            })
+        }else{
+            //res.send(`Product with id ${pid} not found.`)
+            res.json({
+                info: {
+                    status: 201,
+                    message: 'success',
+                    details: 'Cart with id ' + cid + ' was not found.'
+                }
+            })
+        }
+    }catch(error){
+        console.log("Cannot obtain the products with Mongoose: " + error)
+    }
+});
+
+router.delete('/:cid/products/:pid', async (req, res)=>{
+    try{
+        const cid = req.params.cid;
+        const pid = req.params.pid;
+        
+        let cart = await cartsModel.find({_id: cid}).lean();
+        if(cart.length > 0){
+            //obtaining the current products in the cart
+            let products = cart[0].products;
+
+            //if the product already exists, we will just modify the quantity, not add another same product
+            let index_product = products.findIndex((element) => element.product == pid);
+            if (index_product > -1) { // only splice array when item is found
+                products.splice(index_product, 1); // 2nd parameter means remove one item only
+                var result = await cartsModel.findOneAndUpdate({_id: cid}, {products: products}, {new: true});
+            }else{
+                var result = cart
+            }
+            res.json({
+                info:{
+                    status: 200,
+                    message: 'The product ' + pid + ' is no longer in the cart ' + cid + '.'
+                },
+                cart: result
+            })
+        }else{
+            //res.send(`Product with id ${pid} not found.`)
+            res.json({
+                info: {
+                    status: 201,
+                    message: 'success',
+                    details: 'Cart with id ' + cid + ' was not found.'
+                }
+            })
+        }
+    }catch(error){
+        console.log("Cannot obtain the products with Mongoose: " + error)
+    }
+});
 
 export default router;
