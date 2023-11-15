@@ -8,23 +8,45 @@ import productsModel from '../dao/models/products.model.js';
 router.get('/', async (req, res) => {
     try{
         let query = req.query;
-        let {limit, sort} = query;
-        
-        
-        if(typeof sort === 'string' && (sort.toLowerCase() == 'asc' || sort.toLowerCase() == 'desc')){
-            if(sort.toLowerCase() == 'asc'){
-                //var products = await productsModel.find().sort({'price': 'asc'}).lean();
-                var products = await productsModel.aggregate([
-                    {$sort: {'price': 1}}
+        let {limit, sort, category} = query;
+        let sorttype = null;
+        let products = [];
+        if(sort && category){
+            if(typeof sort === 'string' && (sort.toLowerCase() == 'asc' || sort.toLowerCase() == 'desc')){
+                if(sort.toLowerCase() == 'asc'){
+                    sorttype = 1;
+                }else{
+                    sorttype = -1;
+                }
+                products = await productsModel.aggregate([
+                    {$match: {'category': category}},
+                    {$sort: {'price': sorttype}}
                 ]);
             }else{
-                //var products = await productsModel.find().sort({'price': 'desc'}).lean();
-                var products = await productsModel.aggregate([
-                    {$sort: {'price': -1}}
+                products = await productsModel.aggregate([
+                    {$match: {'category': category}}
                 ]);
             }
+            
+        }else if(category){
+            products = await productsModel.aggregate([
+                {$match: {'category': category}}
+            ]);
+        }else if(sort){
+            if(typeof sort === 'string' && (sort.toLowerCase() == 'asc' || sort.toLowerCase() == 'desc')){
+                if(sort.toLowerCase() == 'asc'){
+                    sorttype = 1;
+                }else{
+                    sorttype = -1;
+                }
+                products = await productsModel.aggregate([
+                    {$sort: {'price': sorttype}}
+                ]);
+            }else{
+                products = await productsModel.find().lean();
+            }
         }else{
-            var products = await productsModel.find().lean();
+            products = await productsModel.find().lean();
         }
         
         //res.send({result:"success", payload:products})
