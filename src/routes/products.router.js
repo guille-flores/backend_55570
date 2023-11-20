@@ -224,8 +224,8 @@ router.get('/:pid/json', async (req, res) => {
             //res.send(`Product with id ${pid} not found.`)
             res.json({
                 info: {
-                    status: 201,
-                    message: 'success',
+                    status: 404,
+                    message: 'error',
                     details: 'Product with id ' + pid + ' was not found.'
                 }
             })
