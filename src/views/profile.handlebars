@@ -1,13 +1,19 @@
+
 <div>
-    <h1>Inyección de cookies</h1>
-    <form id="cookieForm">
-        <label>Nombre</label>
-        <input name="name">
-        <br />
-        <label>Correo electrónico</label>
-        <input name="email">
-        <input type="submit">
-    </form>
-    <button onclick="getCookie()">Obtener Cookie</button>
+    <h1>MY PROFILE</h1>
+    {{#if notLoggedIn}}
+    <div>
+        <p>If you don't have an account, you can <a href="/register">REGISTER NOW!</a></p>
+        <p>If you already have an account, you can <a href="/login">LOGIN</a>.</p>
+    </div>
+    {{else}}
+    <p>Welcome {{name}}!</p>
+    <p>Below you can find all your information:</p>
+    <p>Email:</p><p id="loggedemail">{{email}}</p>
+    <p>Age: {{age}}</p>
+    
+    <button type="submit" id="logoutbutton"  onclick="logoutFunction()">Log Out</button>
+    {{/if}}
 </div>
-<script src="./cookieSetter.js"></script>
+
+<script src="./js/logout.js"></script>

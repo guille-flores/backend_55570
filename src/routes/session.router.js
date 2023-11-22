@@ -1,5 +1,6 @@
 import {Router} from 'express'
 import usersModel from '../dao/models/users.model.js';
+import sessionsModel from '../dao/models/sessions.model.js';
 
 const router = Router();
 router.post('/register', async (req, res)=>{
@@ -56,6 +57,19 @@ router.post('/login', async (req, res)=>{
         description: 'Primer Logueo', 
         payload: req.session.user  
         });
-})
+});
+
+router.delete('/logout', async (req, res) => {
+    const {email} = req.body;
+    console.log('Email: ')
+    console.log(email)
+    //we will look for existing sessions
+    await sessionsModel.findOneAndDelete().regex("session", email).then(
+        console.log('Session Closed Successfully!')
+    );
+    res.render('login', {
+        notLoggedIn: true
+    });
+});
 
 export default router

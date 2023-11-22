@@ -5,6 +5,7 @@
 </div>
 <div>
     <h1>Login</h1>
+    {{#if notLoggedIn}}
     <form id="loginForm">
         <label>Email</label>
         <input name="email" type="email" required>
@@ -17,6 +18,13 @@
     <a href="/register">
         <button>Register Now!</button>
     </a>
+
+    {{else}}
+    <p>You are already logged-in! Please log out if you want to access with another account.</p>
+    <p id="loggedemail">{{email}}</p>
+    <button type="submit" id="logoutbutton" onclick="logoutFunction()">Log Out</button>
+    {{/if}}
 </div>
 
 <script src="./js/login.js"></script>
+<script src="./js/logout.js"></script>

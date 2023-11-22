@@ -46,7 +46,8 @@ connect('mongodb+srv://'+MONG_USER+':'+MONGO_SECRET+'@cluster0.nlbr7os.mongodb.n
 app.use(session({
   store: new MongoStorage({
       mongoUrl:'mongodb+srv://'+MONG_USER+':'+MONGO_SECRET+'@cluster0.nlbr7os.mongodb.net/'+MONGO_DB+'?retryWrites=true&w=majority',
-      mongoOptions: {useNewUrlParser :true , useUnifiedTopology: true}
+      mongoOptions: {useNewUrlParser :true , useUnifiedTopology: true},
+      ttl: 30 //expires after 30 min (Mongo DB will show the timezone in UTC - GMT+0)
   }),
   secret: 'CoderSecret',
   resave: false,

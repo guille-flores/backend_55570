@@ -1,10 +1,20 @@
 <div>
+    <a href="/profile">
+        My Profile
+    </a>
+</div>
+<div>
   <h1>Welcome!</h1>
   <button onclick="redirectFunction()">Click to see updated products (real time)</button>
+  {{#if notLoggedIn}}
   <div>
     <p>If you don't have an account, you can <a href="/register">REGISTER NOW!</a></p>
     <p>If you already have an account, you can <a href="/login">LOGIN</a>.</p>
   </div>
+  {{else}}
+  <p id="loggedemail" style="display: none;">{{email}}</p>
+  <button type="submit" id="logoutbutton"  onclick="logoutFunction()">Log Out</button>
+  {{/if}}
   <div style="margin: 20px; padding: 20px; border: thin solid black; background-color:aquamarine; text-align: center;";>
     <h2>Add a product</h2>
     <form id = "add-form" action = "">
@@ -99,3 +109,4 @@
     window.location = "/realtimeproducts" ;
   }
 </script>
+<script src="./js/logout.js"></script>
