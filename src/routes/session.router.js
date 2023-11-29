@@ -1,6 +1,7 @@
 import {Router} from 'express'
 import usersModel from '../dao/models/users.model.js';
 import sessionsModel from '../dao/models/sessions.model.js';
+import bcrypt from 'bcrypt'
 
 const router = Router();
 router.post('/register', async (req, res)=>{
@@ -11,13 +12,13 @@ router.post('/register', async (req, res)=>{
         message: 'error',
         description: 'A user with email ' + email + ' is already registered.'
     });
-
+    const new_password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
     const user = {
         first_name,
         last_name,
         email,
         age,
-        password
+        password:new_password
     };
 
     let result = await usersModel.create(user);
@@ -38,7 +39,7 @@ router.post('/login', async (req, res)=>{
         description: 'A user with email ' + email + ' is not registered.'
     });
 
-    const correct_credentials = await usersModel.findOne({email, password});
+    const correct_credentials = bcrypt.compareSync(password, existing_email.password)
     if(!correct_credentials) return res.status(400).send({
         status: 400,
         message: 'error',
@@ -46,9 +47,9 @@ router.post('/login', async (req, res)=>{
     });
 
     req.session.user = {
-        name : `${correct_credentials.first_name} ${correct_credentials.last_name}`,
-        email : correct_credentials.email,
-        age: correct_credentials.age
+        name : `${existing_email.first_name} ${existing_email.last_name}`,
+        email : existing_email.email,
+        age: existing_email.age
     };
 
     res.send({

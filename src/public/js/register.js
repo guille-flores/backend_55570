@@ -11,7 +11,7 @@ form.addEventListener('submit', e => {
         headers:{
             'Content-Type':'application/json'
         }
-    }).then(result=>result.json()).then(result=>result.json()).then(json=>{
+    }).then(result=>result.json()).then(json=>{
         console.log(json);
         // to redirect customer to main page
         if(json.status == 200){
