@@ -1,64 +1,53 @@
 import {Router} from 'express'
 import usersModel from '../dao/models/users.model.js';
 import sessionsModel from '../dao/models/sessions.model.js';
-import bcrypt from 'bcrypt'
+import passport from 'passport'
 
 const router = Router();
-router.post('/register', async (req, res)=>{
-    const {first_name, last_name, email, age, password} = req.body;
-    const exist = await usersModel.findOne({email});
-    if(exist) return res.status(400).send({
-        status: 400,
-        message: 'error',
-        description: 'A user with email ' + email + ' is already registered.'
-    });
-    const new_password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-    const user = {
-        first_name,
-        last_name,
-        email,
-        age,
-        password:new_password
+router.post('/register', passport.authenticate('register', {
+    failureRedirect: '/failregister',
+}), async (req, res)=>{
+    const {email, password, first_name, last_name, age} = req.body;
+
+    req.session.user = {
+        name : `${first_name} ${last_name}`,
+        email : email,
+        age: age
     };
 
-    let result = await usersModel.create(user);
     res.send({
         status: 200,
         message: 'success',
         description: 'User successfully registered!',
-        payload: result
     })
 });
 
-router.post('/login', async (req, res)=>{
-    const {email, password} = req.body;
-    const existing_email = await usersModel.findOne({email});
-    if(!existing_email) return res.status(400).send({
-        status: 400,
-        message: 'error',
-        description: 'A user with email ' + email + ' is not registered.'
-    });
+router.get('/failregister',async(req,res)=>{
+    res.send({error:'failed'})
+});
 
-    const correct_credentials = bcrypt.compareSync(password, existing_email.password)
-    if(!correct_credentials) return res.status(400).send({
-        status: 400,
-        message: 'error',
-        description: 'Incorrect credentials, prease try again.'
-    });
+
+router.post('/login', passport.authenticate('login', {
+    failureRedirect: '/faillogin',
+}), async (req, res)=>{
+    const {email, password, first_name, last_name, age} = req.body;
 
     req.session.user = {
-        name : `${existing_email.first_name} ${existing_email.last_name}`,
-        email : existing_email.email,
-        age: existing_email.age
+        name : `${first_name} ${last_name}`,
+        email : email,
+        age: age
     };
 
     res.send({
-        status:'200',
+        status: 200,
         message: 'success',
-        description: 'Primer Logueo', 
-        payload: req.session.user  
-        });
+        description: 'User successfully registered!',
+    })
 });
+
+router.get('/faillogin',async(req,res)=>{
+    res.send({error:'failed'})
+})
 
 router.delete('/logout', async (req, res) => {
     const {email} = req.body;

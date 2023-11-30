@@ -7,9 +7,11 @@ import realTimeProducts from './routes/realTimeProducts.router.js';
 import { Server } from 'socket.io';
 import { connect } from 'mongoose';
 
-import session from 'express-session'
-import MongoStorage from 'connect-mongo'
-import sessionRouter from './routes/session.router.js'
+import session from 'express-session';
+import MongoStorage from 'connect-mongo';
+import sessionRouter from './routes/session.router.js';
+import initPassport from './config/passport.config.js';
+import passport from 'passport';
 
 // calling the environment variables
 import { PORT, MONG_USER, MONGO_SECRET, MONGO_DB } from './config.js';
@@ -53,6 +55,10 @@ app.use(session({
   resave: false,
   saveUninitialized: false
 }))
+
+initPassport()
+app.use(passport.initialize())
+app.use(passport.session())
 
 app.use ('/api/sessions', sessionRouter)
 app.use('/api/products/', productsRouter)
