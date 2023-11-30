@@ -1,5 +1,6 @@
 import passport from 'passport';
 import local from 'passport-local'
+import GitHubStrategy from 'passport-github2'
 
 import usersModel from '../dao/models/users.model.js';
 import bcrypt from 'bcrypt'
@@ -7,6 +8,32 @@ import bcrypt from 'bcrypt'
 const LocalStrategy = local.Strategy;
 
 const initPassport = () => {
+    passport.use('github', new GitHubStrategy({
+        clientID: 'Iv1.98e7aef7032a1fc1',
+        clientSecret: '225d22916104e584a1be46fe3b64fafc7907093e',
+        callbackURL: 'http://localhost:8080/api/sessions/githubcallback'
+    },
+    async( accessToken, refreshToken, profile, done) => {
+        try{
+            let user = await usersModel.findOne({email: profile._json.email});
+            if(!user){
+                let new_user = {
+                    first_name: profile._json.name,
+                    last_name: '',
+                    email: profile._json.email,
+                    age: 0,
+                    password: ''
+                };
+                let result = await usersModel.create(new_user);
+                return done(null, result)
+            };
+            return done(null, user)
+        }catch(error){
+            done(null, error)
+        }
+    }
+    ));
+
     passport.use('register', new LocalStrategy( 
         {passReqToCallback :true , usernameField :'email'},
 

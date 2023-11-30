@@ -22,6 +22,10 @@
         <input name="password" type="password" required>
         <button type="submit">SUBMIT</button>
     </form>
+    <div>
+        <a href="/api/sessions/github">
+        <button>Authenticate with GitHub</button>
+    </a>
     {{else}}
     <p>You are already logged-in! Please log out if you want to access with another account or register a new account.</p>
     <p id="loggedemail">{{email}}</p>
