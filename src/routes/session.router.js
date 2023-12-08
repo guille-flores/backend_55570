@@ -73,4 +73,35 @@ router.get('/githubcallback' ,passport.authenticate('github', {failureRedirect:'
     res.redirect('/')
 });
 
+router.get('/current', async (req, res) => {
+    //we will look for existing sessions
+    if(req.hasOwnProperty('session') && req.session.hasOwnProperty('user')){
+        let sessions = await sessionsModel.find().regex("session", req.session.user.email);
+        let user = await usersModel.find({email:req.session.user.email});
+        if(sessions.length > 0){ //if an existing session is found with the given email
+            console.log(sessions)
+            let payload = {
+                user,
+                sessions
+            }
+            console.log(payload)
+            res.json({
+                info:{
+                    status: 200,
+                    message: 'There is a user currently loggeed-in.',
+                    payload
+                }
+            })
+        }
+    }else{
+        res.json({
+            info:{
+                status: 404,
+                message: 'Seems like there is no user currently logged-in.'
+            }
+        })
+    }
+});
+
+
 export default router

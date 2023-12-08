@@ -16,7 +16,15 @@ const schema = new mongoose.Schema({
             message   : '{VALUE} is not an integer value'
         }
     },
-    password: String
+    password: String,
+    role: {
+        type: String,
+        default: 'user'
+    },
+    cart: {
+        type: mongoose.Schema.ObjectId,
+        ref:"carts"
+    }
 });
 
 // generating the product collection in the DB

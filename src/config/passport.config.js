@@ -3,6 +3,8 @@ import local from 'passport-local'
 import GitHubStrategy from 'passport-github2'
 
 import usersModel from '../dao/models/users.model.js';
+import cartsModel from '../dao/models/carts.model.js';
+
 import bcrypt from 'bcrypt'
 
 const LocalStrategy = local.Strategy;
@@ -44,13 +46,20 @@ const initPassport = () => {
                 
                 if(exist) return done(null, false);
                 
+                let role = 'user';
+                if(email.includes('@admin.com')){
+                    role = 'admin';
+                };
+                let cart = await cartsModel.create({})
                 const new_password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
                 const user = {
                     first_name,
                     last_name,
                     email,
                     age,
-                    password:new_password
+                    password:new_password,
+                    role,
+                    cart: cart._id
                 };
 
                 let result = await usersModel.create(user);
