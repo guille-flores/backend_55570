@@ -41,7 +41,7 @@ router.post('/login', passport.authenticate('login', {
     res.send({
         status: 200,
         message: 'success',
-        description: 'User successfully registered!',
+        description: 'User successfully logged-in!',
     })
 });
 

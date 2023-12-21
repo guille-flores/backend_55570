@@ -14,7 +14,7 @@ form.addEventListener('submit', e => {
     }).then(result=>result.json()).then(json=>{
         console.log(json);
         // to redirect customer to main page
-        if(json.status == 200){
+        if(json.status == 200 || json.status == 'success'){
             window.location = "/";
         };
     });
