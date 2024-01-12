@@ -9,7 +9,8 @@ class ProfileController {
             res.render('home', {
                 notLoggedIn: response.notlogged, 
                 areProducts: response.products.length > 0,
-                products: response.products
+                products: response.products,
+                isAdmin: response.isAdmin
             })
         }catch(error){
             res.status(400).json({

@@ -15,6 +15,7 @@
   <p id="loggedemail" style="display: none;">{{email}}</p>
   <button type="submit" id="logoutbutton"  onclick="logoutFunction()">Log Out</button>
   {{/if}}
+  {{#if isAdmin}}
   <div style="margin: 20px; padding: 20px; border: thin solid black; background-color:aquamarine; text-align: center;";>
     <h2>Add a product</h2>
     <form id = "add-form" action = "">
@@ -54,6 +55,11 @@
       <button>Remove</button>
     </form>
   </div>
+  {{else}}
+  <div>
+    <p>You need to be an ADMIN to be able to Add or Remove products.</p>
+  </div>
+  {{/if}}
   {{#if areProducts}}
     {{#each products}}
     <div style="margin: 20px; padding: 20px; border: thin solid black";>

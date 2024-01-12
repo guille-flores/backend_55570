@@ -1,4 +1,5 @@
 import cartsModel from '../dao/models/carts.model.js';
+import productsModel from '../dao/models/products.model.js';
 
 class CartService{
     async createCart(){
@@ -85,6 +86,39 @@ class CartService{
             return result
         }else{
             return false
+        }
+    }
+
+    async purchaseCart(cid){
+        try{
+            let cart = await cartsModel.find({_id: cid});
+            if(cart.length > 0){
+                // if the cart is found, we will loop through the products
+                //obtaining the current products in the cart
+                let products = cart[0].products;
+                var remainingproducts = [];
+                var total = 0;
+                for(let k = 0; k < products.length; k++){
+                    let foundproduct = await productsModel.find({_id: products[k].product}).lean();
+                    if(foundproduct.length > 0){
+                        if(foundproduct[0].stock >= products[k].quantity){
+                            total += foundproduct[0].price*products[k].quantity
+                            let newstock = foundproduct[0].stock - products[k].quantity;
+                            var updatedproduct = await productsModel.findOneAndUpdate({_id: products[k].product}, {stock: newstock}, {new: true});
+                        }else{
+                            remainingproducts.push(products[k]);
+                        }
+                    }else{
+                        remainingproducts.push(products[k]);
+                    }
+                }
+                var result = await cartsModel.findOneAndUpdate({_id: cid}, {products: remainingproducts}, {new: true});
+                return result
+            }else{
+                return false
+            }
+        }catch(error){
+            throw new Error(error.message)
         }
     }
 }

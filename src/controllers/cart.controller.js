@@ -108,6 +108,30 @@ class CartController {
             })
         }
     }
+
+
+    async purchaseCart(req, res){
+        try{
+            const cid = req.params.cid;
+            const response = await CartService.purchaseCart(cid);
+            if(response){
+                res.status(200).json({
+                    cart: response,
+                    status: STATUS.SUCCESS
+                })
+            }else{
+                res.status(404).json({
+                    message: 'Cart with id ' + cid + ' was not found.',
+                    status: STATUS.SUCCESS
+                })
+            }
+        }catch(error){
+            res.status(400).json({
+                error: error.message,
+                status: STATUS.FAIL
+            })
+        }
+    }
 }
 
 export default new CartController

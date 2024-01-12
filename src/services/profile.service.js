@@ -6,10 +6,15 @@ class ProfileService{
     async homePage(data){
         try{
             let notlogged = true;
+            let isAdmin = false;
             if(data.hasOwnProperty('session') && data.session.hasOwnProperty('user')){
                 let sessions = await sessionsModel.find().regex("session", data.session.user.email);
                 if(sessions.length > 0){ //if an existing session is found with the given email
                     notlogged = false;
+                    let email = data.session.user.email
+                    if(email.search('@admin') > 0){
+                        isAdmin = true;
+                    }
                 }
             };
 
@@ -22,7 +27,8 @@ class ProfileService{
             const products = await productsModel.find().lean();
             const result = {
                 products: products,
-                notlogged: notlogged
+                notlogged: notlogged,
+                isAdmin: isAdmin
             }
             return result
         }catch(error){
