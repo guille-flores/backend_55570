@@ -1,5 +1,6 @@
 import cartsModel from '../dao/models/carts.model.js';
 import productsModel from '../dao/models/products.model.js';
+import ticketsModel from '../dao/models/tickets.model.js';
 
 class CartService{
     async createCart(){
@@ -89,7 +90,7 @@ class CartService{
         }
     }
 
-    async purchaseCart(cid){
+    async purchaseCart(cid, email){
         try{
             let cart = await cartsModel.find({_id: cid});
             if(cart.length > 0){
@@ -112,8 +113,12 @@ class CartService{
                         remainingproducts.push(products[k]);
                     }
                 }
-                var result = await cartsModel.findOneAndUpdate({_id: cid}, {products: remainingproducts}, {new: true});
-                return result
+                var new_cart = await cartsModel.findOneAndUpdate({_id: cid}, {products: remainingproducts}, {new: true});
+                let new_ticket = await ticketsModel.create({
+                    amount: total,
+                    purchaser: email
+                })
+                return new_ticket
             }else{
                 return false
             }

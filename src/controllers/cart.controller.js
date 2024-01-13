@@ -113,7 +113,13 @@ class CartController {
     async purchaseCart(req, res){
         try{
             const cid = req.params.cid;
-            const response = await CartService.purchaseCart(cid);
+            var email = ''
+
+            if(req.hasOwnProperty('session') && req.session.hasOwnProperty('user')){
+                email = req.session.user.email;
+            }
+            console.log(req.session)
+            const response = await CartService.purchaseCart(cid, email);
             if(response){
                 res.status(200).json({
                     cart: response,

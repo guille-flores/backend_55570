@@ -13,6 +13,8 @@ class UserController {
                 age: data.age
             };
 
+            req.session.save(); 
+
             res.status(201).json({
                 user: response,
                 status: STATUS.SUCCESS
@@ -35,6 +37,8 @@ class UserController {
                 age: data.age
             };
 
+            req.session.save(); 
+            
             res.status(201).json({
                 user: response,
                 status: STATUS.SUCCESS
