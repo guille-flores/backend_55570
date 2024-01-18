@@ -7,6 +7,7 @@ import productRouter from './router/product.router.js';
 import cartRouter from './router/cart.router.js';
 import profileRouter from './router/profile.router.js';
 import realTimeProductsRouter from './router/realTimeProducts.router.js';
+import mockingproductRouter from './router/mockingproduct.router.js';
 
 import session from 'express-session';
 import MongoStorage from 'connect-mongo';
@@ -14,7 +15,7 @@ import initPassport from './config/passport.config.js';
 import passport from 'passport';
 
 // calling the environment variables
-import { PORT, MONG_USER, MONGO_SECRET, MONGO_DB } from './config.js';
+import { NODE_ENV, PORT, MONG_USER, MONGO_SECRET, MONGO_DB } from './config.js';
 
 import { create } from 'express-handlebars';
 import { join, dirname } from 'path';
@@ -60,6 +61,9 @@ initPassport()
 app.use(passport.initialize())
 app.use(passport.session())
 
+if(NODE_ENV === 'development'){
+  app.use ('/mockingproducts', mockingproductRouter)
+}
 app.use ('/api/sessions', userRouter)
 app.use('/api/products/', productRouter)
 app.use('/api/carts/', cartRouter)
