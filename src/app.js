@@ -13,6 +13,8 @@ import session from 'express-session';
 import MongoStorage from 'connect-mongo';
 import initPassport from './config/passport.config.js';
 import passport from 'passport';
+import compression from 'express-compression';
+import errorHandler from "./controllers/error.controller.js";
 
 // calling the environment variables
 import { NODE_ENV, PORT, MONG_USER, MONGO_SECRET, MONGO_DB } from './config.js';
@@ -34,6 +36,7 @@ const hbs = create({
 const app = express();
 app.use(urlencoded({extended:true}))
 app.use(json());
+app.use(compression());
 const port = PORT;
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
@@ -69,6 +72,8 @@ app.use('/api/products/', productRouter)
 app.use('/api/carts/', cartRouter)
 app.use('/', profileRouter)
 app.use('/realtimeproducts', realTimeProductsRouter)
+
+app.use(errorHandler);
 
 const httpServer = app.listen(port, () => {
   console.log(`Express running on local port: ${PORT}`)

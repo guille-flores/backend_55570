@@ -4,6 +4,9 @@ import GitHubStrategy from 'passport-github2'
 
 import usersModel from '../dao/models/users.model.js';
 import cartsModel from '../dao/models/carts.model.js';
+import CustomError from '../services/errors/customError.service.js';
+import EErors from '../services/errors/typesError.service.js';
+import { generateUserErrorInfo } from '../services/errors/userError.service.js';
 
 import bcrypt from 'bcrypt'
 
@@ -46,10 +49,41 @@ const initPassport = () => {
                 
                 if(exist) return done(null, false);
                 
+                //if consumer submits an invalid email
+                if(!email.match(/[A-Za-z0-9]+@[A-Za-z]+\.[A-Za-z]+/)){
+                    console.log(generateUserErrorInfo({first_name, last_name, email, age}))
+                    CustomError.createError({
+                        name: "User creation error",
+                        cause: generateUserErrorInfo({first_name, last_name, email, age}),
+                        message: "Error Trying to create a User",
+                        code: EErors.INVALID_TYPE
+                    })
+                }
+                //if consumer submits an invalid password
+                if(!password.match(/\S{3,}/) || !password.match(/\d/)){
+                    console.log(generateUserErrorInfo({first_name, last_name, email, age}))
+                    CustomError.createError({
+                        name: "User creation error",
+                        cause: generateUserErrorInfo({first_name, last_name, email, age}),
+                        message: "Error Trying to create a User",
+                        code: EErors.INVALID_TYPE
+                    })
+                }
+                //if consumer submits an invalid age
+                if(age && (typeof Number(age) !== "number" || Number(age) <= 0 || Number(age) > 120)){
+                    console.log(generateUserErrorInfo({first_name, last_name, email, age}))
+                    CustomError.createError({
+                        name: "User creation error",
+                        cause: generateUserErrorInfo({first_name, last_name, email, age}),
+                        message: "Error Trying to create a User",
+                        code: EErors.INVALID_TYPE
+                    })
+                }
+
                 let role = 'user';
                 if(email.includes('@admin.com')){
                     role = 'admin';
-                };
+                }; 
                 let cart = await cartsModel.create({})
                 const new_password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
                 const user = {
@@ -64,7 +98,7 @@ const initPassport = () => {
 
                 let result = await usersModel.create(user);
                 return done(null, result)
-            }catch(error){
+            }catch(error){ 
                 return done('User was not created... '+error)
             }
         }
