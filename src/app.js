@@ -8,6 +8,8 @@ import cartRouter from './router/cart.router.js';
 import profileRouter from './router/profile.router.js';
 import realTimeProductsRouter from './router/realTimeProducts.router.js';
 import mockingproductRouter from './router/mockingproduct.router.js';
+import { devLogger } from './utils/logger_dev.utils.js';
+import { prodLogger } from './utils/logger_prod.utils.js';
 
 import session from 'express-session';
 import MongoStorage from 'connect-mongo';
@@ -63,15 +65,35 @@ app.use(session({
 initPassport()
 app.use(passport.initialize())
 app.use(passport.session())
-
 if(NODE_ENV === 'development'){
+  app.use(devLogger)
+  app.use('/loggerTest', (req, res) => {
+    req.logger.fatal('fatal')
+    req.logger.warning('error')
+    req.logger.info('info')
+    req.logger.http('http')
+    req.logger.debug('debug')
+    req.logger.error('error')
+    res.send('Test Logger')
+  })
   app.use ('/mockingproducts', mockingproductRouter)
+}
+if(NODE_ENV === 'production'){
+  app.use(prodLogger)
+  app.use('/loggerTest', (req, res) => {
+    console.log(req.logger)
+    req.logger.fatal('fatal')
+    req.logger.warning('error')
+    req.logger.info('info')
+    res.send('Test Logger')
+  })
 }
 app.use ('/api/sessions', userRouter)
 app.use('/api/products/', productRouter)
 app.use('/api/carts/', cartRouter)
 app.use('/', profileRouter)
 app.use('/realtimeproducts', realTimeProductsRouter)
+
 
 app.use(errorHandler);
 
