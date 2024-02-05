@@ -10,6 +10,15 @@ class UserService{
             throw new Error(error.message)
         }
     }
+
+    async existingUser(data){
+        try{
+            const result = await usersModel.findOne({email:data.email});
+            return result
+        }catch(error){
+            throw new Error(error.message)
+        }
+    }
  
     async loginUser(data){
         try{

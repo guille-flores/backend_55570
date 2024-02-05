@@ -11,4 +11,6 @@ profileRouter.get('/login', ProfileController.loginPage);
 
 profileRouter.get('/profile', ProfileController.profilePage);
 
+profileRouter.get('/forgotPassword', ProfileController.forgotPasswordPage);
+
 export default profileRouter

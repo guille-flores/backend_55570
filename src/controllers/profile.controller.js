@@ -84,6 +84,27 @@ class ProfileController {
             })
         }
     }
+
+    async forgotPasswordPage(req, res){
+        try{
+            const response = await ProfileService.loggedinUser(req);
+            if(response.hasOwnProperty('notLoggedIn') && response.notLoggedIn == false){
+                res.render('login', {
+                    notLoggedIn: false,
+                    email: response.email
+                })
+            }else{
+                res.render('forgotpassword', {
+                    notLoggedIn: true
+                })
+            }
+        }catch(error){
+            res.status(400).json({
+                error: error.message,
+                status: STATUS.FAIL
+            })
+        }
+    }
 }
 
 export default new ProfileController
