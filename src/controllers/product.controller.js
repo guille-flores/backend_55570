@@ -83,11 +83,15 @@ class ProductController {
     async createProduct(req, res, next){
         try{
             const data = req.body;
-
+            let owner = 'admin'
+            if(req.hasOwnProperty('session') && req.session.hasOwnProperty('user') && req.session.user.hasOwnProperty('email')){
+                owner = req.session.user.email;
+            }
             if(data.hasOwnProperty('products')){ //first we check if there is a multiple product inside the json
                 const product = data.products;
                 if(Array.isArray(product)){ //we also check if the multiple products are a list/array
                     for(let cc = 0; cc < product.length; cc++){
+                        data.products[cc].owner = owner;
                         //if the product has no title, price, code or stock, we will raise an error
                         if(!product[cc].hasOwnProperty('title') || !product[cc].hasOwnProperty('price') || !product[cc].hasOwnProperty('code') || !product[cc].hasOwnProperty('stock')){
                             CustomError.createError({
@@ -150,6 +154,7 @@ class ProductController {
                     }
                 }
             }else{
+                data.owner = owner;
                 if(!data.hasOwnProperty('title') || !data.hasOwnProperty('price') || !data.hasOwnProperty('code') || !data.hasOwnProperty('stock')){
                     CustomError.createError({
                         name: "Product creation error",
@@ -179,7 +184,6 @@ class ProductController {
                     })
                 }
             }
-            
 
             const response = await ProductService.createProduct(data);
 

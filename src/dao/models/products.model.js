@@ -35,7 +35,11 @@ const productsSchema = new Schema({
             message   : '{VALUE} is not an integer value'
         }
     },
-    category: String
+    category: String,
+    owner: {
+        type: String,
+        default: 'admin'
+    }
 });
 
 // generating the product collection in the DB

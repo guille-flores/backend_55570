@@ -66,7 +66,7 @@ class UserController {
             })
         }
     }
-
+ 
     async currentUser(req, res){
         try{
             const response = await UserService.currentUser(req);

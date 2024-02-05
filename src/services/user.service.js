@@ -10,7 +10,7 @@ class UserService{
             throw new Error(error.message)
         }
     }
-
+ 
     async loginUser(data){
         try{
             const result = await usersModel.findOne({email:data.email});
@@ -34,13 +34,12 @@ class UserService{
         }
     }
 
-    async currentUser(req){
+    async currentUser(data){
         try{
-            if(req.hasOwnProperty('session') && req.session.hasOwnProperty('user')){
-                let sessions = await sessionsModel.find().regex("session", req.session.user.email);
-                let user = await usersModel.find({email:req.session.user.email});
+            if(data.hasOwnProperty('session') && data.session.hasOwnProperty('user')){
+                let sessions = await sessionsModel.find().regex("session", data.session.user.email);
+                let user = await usersModel.find({email:data.session.user.email});
                 if(sessions.length > 0){ //if an existing session is found with the given email
-                    console.log(sessions)
                     let payload = {
                         user,
                         sessions

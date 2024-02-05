@@ -1,5 +1,6 @@
 import CartService from "../services/cart.service.js";
 import { STATUS } from "../utils/constants.js";
+import { transport } from "../utils/mailing.utils.js";
 
 class CartController {
     async createCart(req, res){
@@ -113,7 +114,7 @@ class CartController {
     async purchaseCart(req, res){
         try{
             const cid = req.params.cid;
-            var email = ''
+            let email = ''
 
             if(req.hasOwnProperty('session') && req.session.hasOwnProperty('user')){
                 email = req.session.user.email;
@@ -121,6 +122,19 @@ class CartController {
             console.log(req.session)
             const response = await CartService.purchaseCart(cid, email);
             if(response){
+                let emailresponse = await transport.sendMail({
+                    from: 'memo.rfl97@gmail.com',
+                    to: email,
+                    subject: '¡Carrito comprado exitosamente!',
+                    html: `
+                    <div>
+                        <h1>Carrito ID: ${cid}</h1>
+                        <p>Total: ${response.amount}</p>
+                        <p>Fecha de compra: ${response.purchase_datetime}</p>
+                    </div>
+                    `,
+                    attachments: []
+                })
                 res.status(200).json({
                     cart: response,
                     status: STATUS.SUCCESS

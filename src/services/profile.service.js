@@ -2,7 +2,6 @@ import productsModel from '../dao/models/products.model.js';
 import sessionsModel from '../dao/models/sessions.model.js';
 
 class ProfileService{
-
     async homePage(data){
         try{
             let notlogged = true;
@@ -37,8 +36,9 @@ class ProfileService{
     }
 
     async loggedinUser(data){
-        try{
+        try{ 
             //we will look for existing sessions
+            console.log(data.session)
             let result = {}
             if(data.hasOwnProperty('session') && data.session.hasOwnProperty('user')){
                 let sessions = await sessionsModel.find().regex("session", data.session.user.email);
