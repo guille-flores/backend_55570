@@ -4,9 +4,10 @@ formpasswrd.addEventListener('submit', e => {
     const datapswd = new FormData(formpasswrd);
     const obj = {};
     datapswd.forEach((value, key) => obj[key] = value);
-    fetch('/api/sessions/forgotPassword',{
+    const endpoint = '/api/sessions/forgotPassword/' + encodeURI(obj.email);
+    console.log(endpoint)
+    fetch(endpoint,{
         method:'GET', 
-        body:JSON.stringify(obj),
         headers:{
             'Content-Type':'application/json'
         }

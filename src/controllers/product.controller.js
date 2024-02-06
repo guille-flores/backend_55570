@@ -64,7 +64,7 @@ class ProductController {
     }
 
     async getProductByIDJSON(req, res){
-        try{
+        try{ 
             const pid = req.params.pid;
             const response = await ProductService.getProductByID(pid);
 

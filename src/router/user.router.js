@@ -35,6 +35,10 @@ userRouter.get('/githubcallback' ,passport.authenticate('github', {failureRedire
 
 userRouter.get('/current', UserController.currentUser);
 
-userRouter.get('/current', UserController.forgotPassword); 
+userRouter.get('/forgotpassword/:email', UserController.forgotPassword); 
+
+userRouter.get('/resetpassword', UserController.resetPasswordPage);
+
+userRouter.post('/submitpassword', UserController.resetPassword);
 
 export default userRouter

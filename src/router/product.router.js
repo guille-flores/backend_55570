@@ -16,7 +16,7 @@ productRouter.post('/', ProductController.createProduct)
 
 //update a product
 productRouter.put('/', ProductController.updateProduct)
-
+ 
 productRouter.delete('/:pid', ProductController.deleteProductByID)
 
 export default productRouter

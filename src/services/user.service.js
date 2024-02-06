@@ -1,5 +1,6 @@
 import usersModel from '../dao/models/users.model.js';
 import sessionsModel from '../dao/models/sessions.model.js';
+import bcrypt from 'bcrypt'
 
 class UserService{
     async registerUser(data){
@@ -10,16 +11,16 @@ class UserService{
             throw new Error(error.message)
         }
     }
-
-    async existingUser(data){
+ 
+    async existingUser(email){
         try{
-            const result = await usersModel.findOne({email:data.email});
+            const result = await usersModel.findOne({email:email});
             return result
         }catch(error){
             throw new Error(error.message)
         }
     }
- 
+
     async loginUser(data){
         try{
             const result = await usersModel.findOne({email:data.email});
@@ -53,12 +54,21 @@ class UserService{
                         user,
                         sessions
                     }
-                    console.log(payload)
                     return payload
                 }
             }else{
                 return false
             }
+        }catch(error){
+            throw new Error(error.message)
+        }
+    }
+
+    async resetPassword(data){
+        try{
+            let newpassword = bcrypt.hashSync(data.password, bcrypt.genSaltSync(10));
+            const result = await usersModel.updateOne({ email: data.email }, { password: newpassword });
+            return result
         }catch(error){
             throw new Error(error.message)
         }

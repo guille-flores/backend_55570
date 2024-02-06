@@ -40,6 +40,6 @@ const logger = winston.createLogger({
 
 export const prodLogger = (req, res, next) => {
     req.logger = logger;
-    req.logger.http(`${req.method} in ${req.url} - ${new Date().toLocaleDateString}`);
+    req.logger.http(`${req.method} in ${req.url} - ${new Date().toLocaleDateString()}`);
     next();
 }
