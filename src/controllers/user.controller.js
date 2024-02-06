@@ -134,7 +134,7 @@ class UserController {
     async resetPasswordPage(req, res){
         try{ 
             const { time, email } = req.query
-            if(Number(time) + 0.5*3600*1000 > Date.now()){
+            if(Number(time) + 1*3600*1000 > Date.now()){
                 res.render('resetpassword', {
                     expired: false,
                     email: email
