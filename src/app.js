@@ -18,6 +18,26 @@ import passport from 'passport';
 import compression from 'express-compression';
 import errorHandler from "./controllers/error.controller.js";
 import nodemailer from 'nodemailer'
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUiExpress  from 'swagger-ui-express';
+
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Documentacion de las APIs del e-commerce',
+      descripcion: 'Información de las integraciones de Productos y Carritos de un E-Commerce desarrollado para el curso de Backend de Coderhouse.',
+      version: '1.0.0',
+      contact: {
+        name: 'Guillermo Flores',
+        email: 'memo.rfl97@gmail.com',
+        url: 'https://www.linkedin.com/in/guillermo-ramirez-flores/'
+      }
+    }
+  },
+  apis: [`./src/docs/*.yaml`]
+};
+const spec = swaggerJSDoc(swaggerOptions)
 
 // calling the environment variables
 import { NODE_ENV, PORT, MONG_USER, MONGO_SECRET, MONGO_DB, GMAIL_APP_PASSWORD } from './config.js';
@@ -96,6 +116,7 @@ app.use('/realtimeproducts/', realTimeProductsRouter)
 
 
 app.use(errorHandler);
+app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(spec))
 
 const httpServer = app.listen(port, () => {
   console.log(`Express running on local port: ${PORT}`)
