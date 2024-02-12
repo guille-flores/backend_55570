@@ -1,0 +1,123 @@
+paths:
+  /api/carts:
+    post:
+      summary: Create a new cart
+      tags:
+        - Cart
+      responses:
+        '201':
+          description: Cart successfully created
+        '400':
+          description: Not able to create a new cart
+  /api/carts/{id}:
+    get:
+      summary: Retrieve cart by ID
+      tags:
+        - Cart
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The Mongo ObjectID of the cart to retrieve
+      responses:
+        '201':
+          description: Cart successfully retrieved
+        '400':
+          description: Not able to retrieve the cart with the given ID
+    delete:
+      summary: Delete all products from the cart
+      tags:
+        - Cart
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The Mongo ObjectID of the cart from which the products will be deleted
+      responses:
+        '201':
+          description: All cart products successfully deleted
+        '400':
+          description: Not able to delete the products from the given cart
+  /api/carts/{id}/products/{product_id}:
+    post:
+      summary: Add a product to the cart
+      tags:
+        - Cart
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The Mongo ObjectID of the cart
+        - in: path
+          name: product_id
+          required: true
+          schema:
+            type: string
+          description: The Mongo ObjectID of the product to add to the cart
+      requestBody:
+        description: A JSON object containing product quantity to add to the cart 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/addProduct'
+      responses:
+        '201':
+          description: Product added to the cart
+        '400':
+          description: Not able to add the product to the cart
+    delete:
+      summary: Delete a product from the cart
+      tags:
+        - Cart
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The Mongo ObjectID of the cart from which the product will be deleted
+        - in: path
+          name: product_id
+          required: true
+          schema:
+            type: string
+          description: The Mongo ObjectID of the product to be deleted
+      responses:
+        '201':
+          description: Product successfully deleted from the cart
+        '400':
+          description: Not able to delete the product from the given cart
+  /api/carts/{id}/purchase:
+    post:
+      summary: Purchase all products from the cart
+      tags:
+        - Cart
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The Mongo ObjectID of the cart to be purchased
+      responses:
+        '201':
+          description: The products from the cart were successfully purchased
+        '400':
+          description: Not able to purchase the products of the given cart
+
+components:
+  schemas:
+    addProduct:
+      type: object
+      properties:
+        quantity:
+          type: integer
+          description: Number of items of the product to add
+        

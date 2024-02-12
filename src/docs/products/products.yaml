@@ -1,0 +1,181 @@
+paths:
+  /api/products/json:
+    get:
+      summary: Get all products
+      tags:
+        - Products
+      responses:
+        '201':
+          description: Obtained the list of products successfully
+        '400':
+          description: Not able to obtain the list of products
+  /api/products/json?limit={limit}:
+    get:
+      summary: Get certain number of products
+      tags:
+        - Products
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: The number of products to retrieve
+      responses:
+        '201':
+          description: Obtained the list of products successfully.
+        '400':
+          description: Not able to obtain the list of products.
+  /api/products/json?sort={sort}:
+    get:
+      summary: Get all products sorted based on their price
+      tags:
+        - Products
+      parameters:
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [asc, desc]
+          description: Whether the products will be sorted in ascending or descending order based on their prices
+      responses:
+        '201':
+          description: Obtained the list of products successfully.
+        '400':
+          description: Not able to obtain the list of products.
+  /api/products/json?category={category}:
+    get:
+      summary: Get all products from certain category
+      tags:
+        - Products
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: string
+            enum: [coffee, technology, others]
+            example: technology
+          description: To filter only those products that are part of the given category
+      responses:
+        '201':
+          description: Obtained the list of products successfully.
+        '400':
+          description: Not able to obtain the list of products.
+  /api/products/{id}/json:
+    get:
+      summary: Get a product by ID
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The Mongo ObjectID of the product to retrieve
+      responses:
+        '201':
+          description: Obtained the product successfully.
+        '400':
+          description: Not able to obtain the product.
+  /api/products:
+    post:
+      summary: Create a new product
+      tags:
+        - Products
+      requestBody:
+        description: A JSON object containing product information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/product'
+      responses:
+        '201':
+          description: Created the product successfully
+        '400':
+          description: Not able to create the product
+    put:
+      summary: Update an existing product
+      tags:
+        - Products
+      requestBody:
+        description: A JSON object containing product ID and updates 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/productUpdates'
+      responses:
+        '201':
+          description: Created the product successfully
+        '400':
+          description: Not able to create the product
+  /api/products/{id}:
+    delete:
+      summary: Delete a product by ID from the database
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The Mongo DB ObjectID of the product to delete
+      responses:
+        '201':
+          description: Product deleted
+        '400':
+          description: Not able to delete the product.
+
+components:
+  schemas:
+    product:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The name of the product
+        description:
+          type: string
+          description: Product description
+        price:
+          type: number
+          format: double
+          description: Product price in USD
+        thumbnail:
+          type: string
+          description: Product image URL
+        code:
+          type: string
+          description: Unique user assigned product code
+        stock:
+          type: integer
+          description: stock of the product
+        category:
+          type: string
+          description: Category of the product
+        owner:
+          type: string
+          description: The email of the user that created the product (defaults to 'admin')
+      example:
+        title: MOSISO Funda MacBook
+        description: MOSISO Funda Dura Compatible con MacBook Pro 13 Pulgadas 2023, 2022, 2021, 2020-2016 M2 M1 A2338 A2289 A2251 A2159 A1989 A1706 A1708 con/sin Barra táctil, Carcasa Rígida de Plástico, Negro.
+        price: 389.00
+        thumbnail: https://m.media-amazon.com/images/I/51iK6bF9EYL._AC_SL1200_.jpg
+        code: PR-0001
+        stock: 5
+        category: technology
+        owner: test@email.com
+    productUpdates:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The product Mongo ObjectID
+        updates:
+          type: object
+          description: The properties to update with their corresponding new values
+      example:
+        id: 654803c14fb580e26d4ff671
+        updates: "{category: others, price: 1520.69}"
