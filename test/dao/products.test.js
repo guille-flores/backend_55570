@@ -1,9 +1,9 @@
 import supertest from "supertest";
-import { assert, expect } from 'chai'; 
+import { expect } from 'chai'; 
 import { PORT } from "../../src/config.js";
 
 const url = supertest('http://localhost:'+PORT);
-
+let productid
 describe('Testing products', () =>{
     it('Test 1.0 - Obtaining product(s) from /api/products with Supertest', async ()=>{      
         const test = await url.get('/api/products/json')
@@ -115,13 +115,14 @@ describe('Testing products', () =>{
         expect(test.body).to.have.property('products')
         if(test.body.hasOwnProperty('products')){
             expect(test.body.products).to.have.property('_id')
-            console.log('New Product ID: '+test.body.products._id)
+            productid = test.body.products._id
+            console.log('New Product ID: ' + productid)
         }
     })
 
     it('Test 3 - Updating a product from /api/products/{id} with Supertest', async ()=>{
         const updateProduct = {
-            id: '65d656c8576e2f8373d17062',
+            id: productid,
             updates: {
                 title: 'New Title Supertest',
                 price: 100
@@ -144,8 +145,7 @@ describe('Testing products', () =>{
     })
 
     it('Test 4 - Deleting a product from /api/products/{id} with Supertest', async ()=>{
-        const product_id = '65d656c8576e2f8373d17062' 
-        const test  = await url.delete('/api/products/' + product_id)
+        const test  = await url.delete('/api/products/' + productid)
         expect(test.statusCode).to.be.oneOf([201, 200], "Payload: "+ JSON.stringify(test.body))
         expect(test.body).to.have.property('product')
         if(test.body.hasOwnProperty('product')){

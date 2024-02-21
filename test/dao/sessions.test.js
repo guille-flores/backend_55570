@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import usersModel from "../../src/dao/models/users.model.js";
 import { PORT, MONGO_DB, MONGO_USER, MONGO_SECRET } from "../../src/config.js";
 import supertest from "supertest";
-import { assert, expect } from 'chai'; 
+import { expect } from 'chai'; 
 
 const url = supertest('http://localhost:'+PORT);
 
