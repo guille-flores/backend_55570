@@ -40,7 +40,7 @@ const swaggerOptions = {
 const spec = swaggerJSDoc(swaggerOptions)
 
 // calling the environment variables
-import { NODE_ENV, PORT, MONG_USER, MONGO_SECRET, MONGO_DB, GMAIL_APP_PASSWORD } from './config.js';
+import { NODE_ENV, PORT, MONGO_USER, MONGO_SECRET, MONGO_DB, GMAIL_APP_PASSWORD } from './config.js';
 
 import { create } from 'express-handlebars';
 import { join, dirname } from 'path';
@@ -67,13 +67,13 @@ app.set('view engine', 'handlebars');
 app.use(express.static(__dirname+'/public'))
 
 // connecting to Mongo DB 
-connect('mongodb+srv://'+MONG_USER+':'+MONGO_SECRET+'@cluster0.nlbr7os.mongodb.net/'+MONGO_DB+'?retryWrites=true&w=majority')
+connect('mongodb+srv://'+MONGO_USER+':'+MONGO_SECRET+'@cluster0.nlbr7os.mongodb.net/'+MONGO_DB+'?retryWrites=true&w=majority')
   .then(() => console.log('connected to DB!'))
   .catch(error => console.log("Cannot connect to MongoDB: " + error))
 
 app.use(session({
   store: new MongoStorage({
-      mongoUrl:'mongodb+srv://'+MONG_USER+':'+MONGO_SECRET+'@cluster0.nlbr7os.mongodb.net/'+MONGO_DB+'?retryWrites=true&w=majority',
+      mongoUrl:'mongodb+srv://'+MONGO_USER+':'+MONGO_SECRET+'@cluster0.nlbr7os.mongodb.net/'+MONGO_DB+'?retryWrites=true&w=majority',
       mongoOptions: {useNewUrlParser :true , useUnifiedTopology: true},
       ttl: 30 //expires after 30 min (Mongo DB will show the timezone in UTC - GMT+0)
   }),
