@@ -1,6 +1,7 @@
 import usersModel from '../dao/models/users.model.js';
 import sessionsModel from '../dao/models/sessions.model.js';
 import bcrypt from 'bcrypt'
+import { isValidObjectId } from 'mongoose';
 
 class UserService{
     async registerUser(data){
@@ -34,6 +35,9 @@ class UserService{
         try{
             console.log('Email: ')
             console.log(data.email)
+            let update_last_connection = await usersModel.findOneAndUpdate({email: data.email}, {last_connection: Date.now()}, {
+                new: true
+            });
             //we will look for existing sessions
             const result = await sessionsModel.findOneAndDelete().regex("session", data.email).then(
                 console.log('Session Closed Successfully!')
@@ -68,6 +72,23 @@ class UserService{
         try{
             let newpassword = bcrypt.hashSync(data.password, bcrypt.genSaltSync(10));
             const result = await usersModel.updateOne({ email: data.email }, { password: newpassword });
+            return result
+        }catch(error){
+            throw new Error(error.message)
+        }
+    }
+
+    async userDocuments(data, uid){
+        try{
+            let result
+            if(isValidObjectId(uid)){
+                result = await usersModel.findOneAndUpdate({ _id: uid }, { documents: data });
+                if (result === null) {
+                    result = `No user was found with the id ${uid}.`;
+                }
+            }else{
+                result = `A valid MongoDB Object ID is needed as the User ID. Seems like ${uid} is not valid.`
+            }
             return result
         }catch(error){
             throw new Error(error.message)

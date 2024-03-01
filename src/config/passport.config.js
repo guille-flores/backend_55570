@@ -27,7 +27,8 @@ const initPassport = () => {
                     last_name: '',
                     email: profile._json.email,
                     age: 0,
-                    password: ''
+                    password: '',
+                    last_connection: Date.now()
                 };
                 let result = await usersModel.create(new_user);
                 return done(null, result)
@@ -93,7 +94,8 @@ const initPassport = () => {
                     age,
                     password:new_password,
                     role,
-                    cart: cart._id
+                    cart: cart._id,
+                    last_connection: Date.now()
                 };
 
                 let result = await usersModel.create(user);
@@ -115,6 +117,11 @@ const initPassport = () => {
 
                 const correct_credentials = bcrypt.compareSync(password, existing_email.password)
                 if(!correct_credentials) return done(null, false)
+
+                /* If the credentials are correct, we will also update the last login date */
+                let update_last_connection = await usersModel.findOneAndUpdate({email: email}, {last_connection: Date.now()}, {
+                    new: true
+                });
 
                 return done(null, existing_email)
             }catch(error){

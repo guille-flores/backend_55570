@@ -168,6 +168,24 @@ class UserController {
             })
         }
     }
+
+    async userDocuments(req, res){
+        try{
+            const uid = req.params.uid;
+            const data = req.body;
+            const response = await UserService.userDocuments(data, uid);
+
+            res.status(201).json({
+                user: response,
+                status: STATUS.SUCCESS
+            })
+        }catch(error){
+            res.status(400).json({
+                error: error.message,
+                status: STATUS.FAIL
+            })
+        }
+    }
 }
 
 export default new UserController

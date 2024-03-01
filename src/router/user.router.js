@@ -41,4 +41,6 @@ userRouter.get('/resetpassword', UserController.resetPasswordPage);
 
 userRouter.post('/submitpassword', UserController.resetPassword);
 
+userRouter.post('/:uid/documents', UserController.userDocuments);
+
 export default userRouter

@@ -10,13 +10,10 @@ class ProductController {
         try{
             const query = req.query
             const response = await ProductService.getProducts(query);
-
+            
             res.render('home', {
                 areProducts: response.length > 0,
                 products: response
-            }).status(201).json({
-                products: response,
-                status: STATUS.SUCCESS
             })
         }catch(error){
             res.status(400).json({

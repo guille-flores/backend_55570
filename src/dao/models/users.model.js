@@ -24,7 +24,12 @@ const schema = new mongoose.Schema({
     cart: {
         type: mongoose.Schema.ObjectId,
         ref:"carts"
-    }
+    },
+    last_connection: Date,
+    documents: [{
+        name: String,
+        reference: String
+    }]
 });
 
 // generating the product collection in the DB
