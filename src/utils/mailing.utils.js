@@ -1,11 +1,12 @@
 import nodemailer from 'nodemailer'
-import { GMAIL_APP_PASSWORD } from '../config.js'
+import * as dotenv from 'dotenv'
+dotenv.config()
 
 export const transport = nodemailer.createTransport({
     service: 'gmail',
     port: 587,
     auth:{
       user: 'memo.rfl97@gmail.com',
-      pass: GMAIL_APP_PASSWORD
+      pass: process.env.GMAIL_APP_PASSWORD
     }
 })

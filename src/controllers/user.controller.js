@@ -1,7 +1,8 @@
 import UserService from "../services/user.service.js";
 import { STATUS } from "../utils/constants.js";
 import { transport } from "../utils/mailing.utils.js";
-import { PORT } from "../config.js";
+import * as dotenv from 'dotenv'
+dotenv.config()
 
 class UserController {
     async registerUser(req, res){
@@ -105,7 +106,7 @@ class UserController {
                         <h1>Reestablece tu contraseña</h1>
                         <p>Parece que se ha solicitado reestablecer la contraseña del usuario ${email}.</p>
                         <p>Reestablece tu contraseña dando click al siguiente enlace:</p>
-                        <a href='http://localhost:${PORT}/api/sessions/resetpassword?time=${Date.now()}&email=${encodeURI(email)}'>
+                        <a href='http://localhost:${process.env.PORT}/api/sessions/resetpassword?time=${Date.now()}&email=${encodeURI(email)}'>
                             <button type="button">Reestablecer Contraseña</button>
                         </a>
                         <p>Si no has sido tú, puedes hacer caso omiso a este mensaje.</p>

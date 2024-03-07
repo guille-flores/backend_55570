@@ -40,14 +40,14 @@ const swaggerOptions = {
 const spec = swaggerJSDoc(swaggerOptions)
 
 // calling the environment variables
-import { NODE_ENV, PORT, MONGO_USER, MONGO_SECRET, MONGO_DB, GMAIL_APP_PASSWORD } from './config.js';
+import * as dotenv from 'dotenv'
+dotenv.config()
 
 import { create } from 'express-handlebars';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-console.log(__dirname)
 // Set up Express-Handlebars
 const hbs = create({
     extname: 'handlebars', // Specify the file extension for your templates
@@ -60,7 +60,7 @@ const app = express();
 app.use(urlencoded({extended:true}))
 app.use(json());
 app.use(compression());
-const port = PORT;
+const port = process.env.PORT;
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 app.set('views', join(__dirname, 'views'));
@@ -69,13 +69,13 @@ app.set('views', join(__dirname, 'views'));
 app.use(express.static(__dirname+'/public'))
 
 // connecting to Mongo DB 
-connect('mongodb+srv://'+MONGO_USER+':'+MONGO_SECRET+'@cluster0.nlbr7os.mongodb.net/'+MONGO_DB+'?retryWrites=true&w=majority')
+connect('mongodb+srv://'+process.env.MONGO_USER+':'+process.env.MONGO_SECRET+'@cluster0.nlbr7os.mongodb.net/'+process.env.MONGO_DB+'?retryWrites=true&w=majority')
   .then(() => console.log('connected to DB!'))
   .catch(error => console.log("Cannot connect to MongoDB: " + error))
 
 app.use(session({
   store: new MongoStorage({
-      mongoUrl:'mongodb+srv://'+MONGO_USER+':'+MONGO_SECRET+'@cluster0.nlbr7os.mongodb.net/'+MONGO_DB+'?retryWrites=true&w=majority',
+      mongoUrl:'mongodb+srv://'+process.env.MONGO_USER+':'+process.env.MONGO_SECRET+'@cluster0.nlbr7os.mongodb.net/'+process.env.MONGO_DB+'?retryWrites=true&w=majority',
       mongoOptions: {useNewUrlParser :true , useUnifiedTopology: true},
       ttl: 30 //expires after 30 min (Mongo DB will show the timezone in UTC - GMT+0)
   }),
@@ -87,7 +87,7 @@ app.use(session({
 initPassport()
 app.use(passport.initialize())
 app.use(passport.session())
-if(NODE_ENV === 'development'){
+if(process.env.NODE_ENV === 'development'){
   app.use(devLogger)
   app.use('/loggerTest', (req, res) => {
     req.logger.fatal('fatal')
@@ -100,7 +100,7 @@ if(NODE_ENV === 'development'){
   })
   app.use ('/mockingproducts', mockingproductRouter)
 }
-if(NODE_ENV === 'production'){
+if(process.env.NODE_ENV === 'production'){
   app.use(prodLogger)
   app.use('/loggerTest', (req, res) => {
     console.log(req.logger)
@@ -121,7 +121,7 @@ app.use(errorHandler);
 app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(spec))
 
 const httpServer = app.listen(port, () => {
-  console.log(`Express running on local port: ${PORT}`)
+  console.log(`Express running on local port: ${process.env.PORT}`)
 })
 
 const io = new Server(httpServer);
