@@ -109,6 +109,7 @@ class CartService{
                 //obtaining the current products in the cart
                 let products = cart[0].products;
                 var remainingproducts = [];
+                var purchasedproducts = [];
                 var total = 0;
                 for(let k = 0; k < products.length; k++){
                     let foundproduct = await productsModel.find({_id: products[k].product}).lean();
@@ -117,6 +118,12 @@ class CartService{
                             total += foundproduct[0].price*products[k].quantity
                             let newstock = foundproduct[0].stock - products[k].quantity;
                             var updatedproduct = await productsModel.findOneAndUpdate({_id: products[k].product}, {stock: newstock}, {new: true});
+                            let addedproduct = {
+                                title: foundproduct[0].title,
+                                price: foundproduct[0].price,
+                                quantity: products[k].quantity
+                            }
+                            purchasedproducts.push(addedproduct);
                         }else{
                             remainingproducts.push(products[k]);
                         }
@@ -127,8 +134,10 @@ class CartService{
                 var new_cart = await cartsModel.findOneAndUpdate({_id: cid}, {products: remainingproducts}, {new: true});
                 let new_ticket = await ticketsModel.create({
                     amount: total,
+                    products: purchasedproducts,
                     purchaser: email
                 })
+                console.log(purchasedproducts)
                 return new_ticket
             }else{
                 return false

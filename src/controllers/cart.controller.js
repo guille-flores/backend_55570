@@ -142,9 +142,15 @@ class CartController {
             if(req.hasOwnProperty('session') && req.session.hasOwnProperty('user')){
                 email = req.session.user.email;
             }
-            console.log(req.session)
+            //console.log(req.session)
             const response = await CartService.purchaseCart(cid, email);
             if(response){
+                const productArray = response.products
+                var prodList = ''
+                for(let i = 0; i < productArray.length; i++){
+                    prodList += `<li>${productArray[i].title} - Quantity: ${productArray[i].quantity} - Price: ${productArray[i].price}</li>`
+                }
+                console.log(prodList)
                 let emailresponse = await transport.sendMail({
                     from: 'memo.rfl97@gmail.com',
                     to: email,
@@ -152,7 +158,8 @@ class CartController {
                     html: `
                     <div>
                         <h1>Carrito ID: ${cid}</h1>
-                        <p>Total: ${response.amount}</p>
+                        <p>Total: ${response.amount}</p> 
+                        <ul>${prodList}</ul>
                         <p>Fecha de compra: ${response.purchase_datetime}</p>
                     </div>
                     `,

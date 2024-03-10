@@ -210,7 +210,6 @@
             if(data){
                 if(data.user){
                     const user = data.user.user[0]
-                    console.log(user)
                     const cid = user.cart;
                     const purchase = await fetch(`/api/carts/${cid}/purchase`, {
                         method: 'POST',

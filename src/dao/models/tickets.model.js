@@ -12,6 +12,11 @@ const ticketsSchema = new Schema({
         type: Number,
         default: 0
     },
+    products: [{
+        title: String,
+        price: Number,
+        quantity: Number
+    }],
     purchaser: String
 });
 
