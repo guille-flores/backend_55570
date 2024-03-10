@@ -209,6 +209,52 @@ class UserController {
             })
         }
     }
+
+    async getAllUsers(req, res){
+        try{
+            const response = await UserService.getAllUsers();
+            if(response){
+                res.status(201).json({
+                    user: response,
+                    status: STATUS.SUCCESS
+                })
+            }else{
+                res.status(404).json({
+                    user: 'Seems like there is no user registered yet.',
+                    status: STATUS.SUCCESS
+                })
+            }
+        }catch(error){
+            res.status(400).json({
+                error: error.message,
+                status: STATUS.FAIL
+            })
+        }
+    }
+
+    async deleteUsers(req, res){
+        try{
+            const response = await UserService.deleteUsers();
+            if(response){
+                res.status(201).json({
+                    message: "Successfully deleted all users without activity in more than two days ago.",
+                    users: response,
+                    status: STATUS.SUCCESS
+                })
+            }else{
+                res.status(404).json({
+                    message: "There were no users to be deleted (all have last connectivity date within the last two days).",
+                    users: null,
+                    status: STATUS.SUCCESS
+                })
+            }
+        }catch(error){
+            res.status(400).json({
+                error: error.message,
+                status: STATUS.FAIL
+            })
+        }
+    }
 }
 
 export default new UserController

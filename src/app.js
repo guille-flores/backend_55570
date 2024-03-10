@@ -3,6 +3,7 @@ import express, { urlencoded, json } from 'express';
 import { Server } from 'socket.io';
 import { connect } from 'mongoose';
 import userRouter from './router/user.router.js';
+import usersRouter from './router/users_get_delete.router.js';
 import productRouter from './router/product.router.js';
 import cartRouter from './router/cart.router.js';
 import profileRouter from './router/profile.router.js';
@@ -111,6 +112,7 @@ if(process.env.NODE_ENV === 'production'){
   })
 }
 app.use ('/api/sessions/', userRouter)
+app.use ('/api/users/', usersRouter)
 app.use('/api/products/', productRouter)
 app.use('/api/carts/', cartRouter)
 app.use('/', profileRouter)

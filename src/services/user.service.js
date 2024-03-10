@@ -94,6 +94,46 @@ class UserService{
             throw new Error(error.message)
         }
     }
+
+    async getAllUsers(){
+        try{
+            let users = await usersModel.find();
+            
+            // Remove the 'password' key from each object
+            const newUserArray = users.map(user => {
+                const userObject = user.toObject(); // Convert Mongoose document to plain JavaScript object
+                delete userObject.password;
+                return userObject;
+            });
+            
+            return newUserArray
+        }catch(error){
+            throw new Error(error.message)
+        }
+    }
+
+    async deleteUsers(){
+        try{
+            const currenttime = new Date();
+            currenttime.setDate(currenttime.getDate() - 2); //subtracting 2 days to filter users
+            let users = await usersModel.find({last_connection: {$lt: currenttime}});
+            
+            if(users.length > 0){
+                // Remove the 'password' key from each object
+                const newUserArray = users.map(user => {
+                    const userObject = user.toObject(); // Convert Mongoose document to plain JavaScript object
+                    delete userObject.password;
+                    return userObject;
+                });
+                const result = await usersModel.deleteMany({ last_connection: { $lt: currenttime } });
+                return newUserArray
+            }else{
+                return null
+            }
+        }catch(error){
+            throw new Error(error.message)
+        }
+    }
 }
 
 export default new UserService();
