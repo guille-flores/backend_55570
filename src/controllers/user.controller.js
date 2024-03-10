@@ -9,7 +9,7 @@ class UserController {
         try{
             const data = req.body;
             const response = await UserService.registerUser(data);
-
+            
             req.session.user = {
                 name : `${data.first_name} ${data.last_name}`,
                 email : data.email,
@@ -236,6 +236,21 @@ class UserController {
         try{
             const response = await UserService.deleteUsers();
             if(response){
+                response.forEach(async(user) => {
+                    let emailresponse = await transport.sendMail({
+                        from: 'memo.rfl97@gmail.com',
+                        to: user.email,
+                        subject: 'Your account has been deleted',
+                        html: `
+                        <div>
+                            <p>The account associated with the email address ${user.email} has been deleted due to inactivity.</p> 
+                            <p>Last connection: ${user.last_connection}</p>
+                        </div>
+                        `,
+                        attachments: []
+                    })
+                });
+                
                 res.status(201).json({
                     message: "Successfully deleted all users without activity in more than two days ago.",
                     users: response,
