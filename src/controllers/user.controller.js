@@ -91,7 +91,29 @@ class UserController {
             })
         }
     }
- 
+    
+    async currentUserCart(req, res){
+        try{
+            const response = await UserService.currentUser(req);
+            if(response){
+                res.status(200).json({
+                    user: response,
+                    status: 'SUCCESS'
+                });
+            }else{
+                res.status(200).json({
+                    user: null,
+                    status: 'SUCCESS'
+                });
+            }
+        }catch(error){
+            res.status(400).json({
+                error: error.message,
+                status: STATUS.FAIL
+            })
+        }
+    }
+
     async forgotPassword(req, res){
         try{
             const email = req.params.email;

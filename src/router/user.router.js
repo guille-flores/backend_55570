@@ -34,6 +34,7 @@ userRouter.get('/githubcallback' ,passport.authenticate('github', {failureRedire
 });
 
 userRouter.get('/current', UserController.currentUser);
+userRouter.get('/currentUserCart', UserController.currentUserCart);
 
 userRouter.get('/forgotpassword/:email', UserController.forgotPassword); 
 

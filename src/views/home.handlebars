@@ -1,7 +1,18 @@
 <div>
-    <a href="/profile">
-        My Profile
-    </a>
+    <table border="0"  cellpadding="10" style="width: 100%;">
+    <tr>
+        <td align="center">
+            <a href="/profile">
+                My Profile
+            </a>
+        </td>
+        <td align="center">
+          <button id="purchaseCart" onclick="purchaseCart()">
+            Purchase Cart
+          </button>
+        </td>
+    </tr>
+</table>
 </div>
 <div>
   <h1>Welcome!</h1>
@@ -68,6 +79,11 @@
       <p>Price: ${{this.price}}</p>
       <p>Stock: {{this.stock}}</p>
       <img src="{{thumbnail}}" alt="" width="500">
+      <label>Quantity:</label>
+      <button onclick="decrement({{this.stock}}, '{{this._id}}')">-</button>
+      <input type="text" id="quantity_{{this._id}}" value="0" readonly>
+      <button onclick="increment({{this.stock}}, '{{this._id}}')">+</button>
+      <button id="addToCartBtn" onclick="addToCart('{{this._id}}', '{{this.title}}')">Add to Cart</button>
     </div>
     {{/each}}
   {{else}}
@@ -116,3 +132,108 @@
   }
 </script>
 <script src="./js/logout.js"></script>
+<script>
+    // JavaScript functions for incrementing and decrementing quantity
+    function increment(stock, pid) {
+        var quantityInput = document.getElementById('quantity_'+pid);
+        var quantityValue = parseInt(quantityInput.value, 10);
+        if(quantityValue+1 <= stock){
+          quantityInput.value = quantityValue + 1;
+        }else{
+          Swal.fire({
+            title: 'No enough stock!',
+            text: 'There is no enough stock left to add more items of the desired product.',
+            icon: 'warning'
+          })
+        }
+    }
+
+    function decrement(stock, pid) {
+        var quantityInput = document.getElementById('quantity_'+pid);
+        var quantityValue = parseInt(quantityInput.value, 10);
+        if (quantityValue > 0) {
+            quantityInput.value = quantityValue - 1;
+        }
+    }
+
+    async function addToCart(pid, pname) {
+        var quantity = document.getElementById('quantity_'+pid).value;
+        
+        const response = await fetch('/api/sessions/currentUserCart', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        if (response.status == 200) {
+            const data = await response.json()
+            if(data){
+                if(data.user){
+                    console.log(data.user.user[0].cart)
+                    const cid = data.user.user[0].cart;
+                    const obj = {quantity: quantity};
+                    const addToCart = await fetch(`/api/carts/${cid}/products/${pid}`, {
+                        method: 'POST',
+                        body: JSON.stringify(obj),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    if(addToCart.status == 200){
+                        Swal.fire({
+                          title: 'Product added to the cart!',
+                          text: `You added ${quantity} ${pname} to your cart (cart ID ${cid}).`,
+                          icon: 'success'
+                        })
+                    }
+                }else{
+                    console.log('no user')
+                    Swal.fire({
+                      title: 'Need to sign-in!',
+                      text: 'You need to register or login in order to add products to your cart.',
+                      icon: 'info'
+                    })
+                }
+            }
+        }
+    }  
+
+    async function purchaseCart(){
+      const response = await fetch('/api/sessions/currentUserCart', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        if (response.status == 200) {
+            const data = await response.json()
+            if(data){
+                if(data.user){
+                    const user = data.user.user[0]
+                    console.log(user)
+                    const cid = user.cart;
+                    const purchase = await fetch(`/api/carts/${cid}/purchase`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    if(purchase.status == 200){
+                        Swal.fire({
+                          title: 'Cart purchased!',
+                          text: `You have successfully purchased the cart ID ${cid}. Check your email ${user.email} for the receipt and confirmation of the products.`,
+                          icon: 'success'
+                        })
+                    }
+                }else{
+                    console.log('no user')
+                    Swal.fire({
+                      title: 'Need to sign-in!',
+                      text: 'You need to register or login in order to add products to your cart.',
+                      icon: 'info'
+                    })
+                }
+            }
+        }
+    }
+</script>

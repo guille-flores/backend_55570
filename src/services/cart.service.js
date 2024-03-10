@@ -1,4 +1,5 @@
 import cartsModel from '../dao/models/carts.model.js';
+import usersModel from '../dao/models/users.model.js';
 import productsModel from '../dao/models/products.model.js';
 import ticketsModel from '../dao/models/tickets.model.js';
 
@@ -16,6 +17,16 @@ class CartService{
         try{
             let cart = await cartsModel.find({_id: id}).populate('products.product');
             return cart
+        }catch(error){
+            throw new Error(error.message)
+        }
+    }
+ 
+    async getCartFromEmail(data){
+        try{
+            let user = await usersModel.find({email: data.email});
+            console.log(user)
+            return user
         }catch(error){
             throw new Error(error.message)
         }

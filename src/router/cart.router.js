@@ -10,5 +10,6 @@ cartRouter.post('/:cid/products/:pid', CartController.addProductToCartByID)
 cartRouter.delete('/:cid', CartController.deleteProductsFromCartByID)
 cartRouter.delete('/:cid/products/:pid', CartController.deleteProductByIDFromCart)
 cartRouter.post('/:cid/purchase', CartController.purchaseCart)
+cartRouter.get('/getCartFromEmail', CartController.getCartFromEmail)
 
 export default cartRouter

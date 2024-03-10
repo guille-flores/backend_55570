@@ -42,6 +42,29 @@ class CartController {
         }
     }
 
+    async getCartFromEmail(req, res){
+        try{
+            const response = await CartService.getCartFromEmail(req);
+            console.log(response)
+            if(response.length > 0){
+                res.status(201).json({
+                    cart: response,
+                    status: STATUS.SUCCESS
+                })
+            }else{
+                res.status(404).json({
+                    cart: 'Cart for email ' + cid + ' was not created or found.',
+                    status: STATUS.SUCCESS
+                })
+            }
+        }catch(error){
+            res.status(400).json({
+                error: error.message,
+                status: STATUS.FAIL
+            })
+        }
+    }
+
     async addProductToCartByID(req, res){
         try{
             const response = await CartService.addProductToCartByID(req);
