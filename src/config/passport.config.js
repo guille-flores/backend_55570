@@ -7,6 +7,9 @@ import cartsModel from '../dao/models/carts.model.js';
 import CustomError from '../services/errors/customError.service.js';
 import EErors from '../services/errors/typesError.service.js';
 import { generateUserErrorInfo } from '../services/errors/userError.service.js';
+// calling the environment variables
+import * as dotenv from 'dotenv'
+dotenv.config()
 
 import bcrypt from 'bcrypt'
 
@@ -15,7 +18,7 @@ const LocalStrategy = local.Strategy;
 const initPassport = () => {
     passport.use('github', new GitHubStrategy({
         clientID: 'Iv1.98e7aef7032a1fc1',
-        clientSecret: '225d22916104e584a1be46fe3b64fafc7907093e',
+        clientSecret: process.env.PASSPORT_GITHUB_SECRET,
         callbackURL: 'http://localhost:8080/api/sessions/githubcallback'
     },
     async( accessToken, refreshToken, profile, done) => {
