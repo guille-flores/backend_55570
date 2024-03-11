@@ -1,13 +1,17 @@
 import mongoose from "mongoose";
 import usersModel from "../../src/dao/models/users.model.js";
-import { PORT, MONGO_DB, MONGO_USER, MONGO_SECRET } from "../../src/config.js";
 import supertest from "supertest";
 import { expect } from 'chai'; 
 
-const url = supertest('http://localhost:'+PORT);
+// calling the environment variables
+//import { PORT, MONGO_DB, MONGO_USER, MONGO_SECRET } from "../../src/config.js";
+import * as dotenv from 'dotenv'
+dotenv.config()
+
+const url = supertest('http://localhost:'+process.env.PORT);
 
 before(async ()=>{
-    mongoose.connect('mongodb+srv://'+MONGO_USER+':'+MONGO_SECRET+'@cluster0.nlbr7os.mongodb.net/'+MONGO_DB+'?retryWrites=true&w=majority')
+    mongoose.connect('mongodb+srv://'+process.env.MONGO_USER+':'+process.env.MONGO_SECRET+'@cluster0.nlbr7os.mongodb.net/'+process.env.MONGO_DB+'?retryWrites=true&w=majority')
     await usersModel.collection.drop()
 })
 

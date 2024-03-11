@@ -1,8 +1,13 @@
 import supertest from "supertest";
 import { expect } from 'chai'; 
-import { PORT } from "../../src/config.js";
 
-const url = supertest('http://localhost:'+PORT);
+// calling the environment variables
+//import { PORT } from "../../src/config.js";
+import * as dotenv from 'dotenv'
+dotenv.config()
+
+
+const url = supertest('http://localhost:'+process.env.PORT);
 let productid
 describe('Testing products', () =>{
     it('Test 1.0 - Obtaining product(s) from /api/products with Supertest', async ()=>{      
