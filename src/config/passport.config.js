@@ -19,7 +19,7 @@ const initPassport = () => {
     passport.use('github', new GitHubStrategy({
         clientID: 'Iv1.98e7aef7032a1fc1',
         clientSecret: process.env.PASSPORT_GITHUB_SECRET,
-        callbackURL: '/api/sessions/githubcallback'
+        callbackURL: 'https://backend55570-production.up.railway.app/api/sessions/githubcallback'
     },
     async( accessToken, refreshToken, profile, done) => {
         try{
