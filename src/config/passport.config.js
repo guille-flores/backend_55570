@@ -15,9 +15,13 @@ import bcrypt from 'bcrypt'
 
 const LocalStrategy = local.Strategy;
 var callbackURL = 'http://localhost:' + process.env.PORT
+console.log('Defining Callback URL')
+console.log(callbackURL)
 if (typeof window !== "undefined") {
+    console.log('window')
     callbackURL = window.location.origin
 }
+console.log(callbackURL)
 
 const initPassport = () => {
     passport.use('github', new GitHubStrategy({
@@ -27,10 +31,7 @@ const initPassport = () => {
     },
     async( accessToken, refreshToken, profile, done) => {
         try{
-            console.log('passport before find one')
-            console.log(profile)
             let user = await usersModel.findOne({email: profile._json.email});
-            console.log('passport after find one')
             if(!user){
                 let new_user = {
                     first_name: profile._json.name,
