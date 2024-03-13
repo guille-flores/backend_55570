@@ -14,8 +14,6 @@ dotenv.config()
 import bcrypt from 'bcrypt'
 
 const LocalStrategy = local.Strategy;
-var callbackURL = 'http://localhost:' + process.env.PORT
-
 
 const initPassport = () => {
     passport.use('github', new GitHubStrategy({
