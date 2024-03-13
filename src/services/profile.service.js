@@ -6,8 +6,11 @@ class ProfileService{
         try{
             let notlogged = true;
             let isAdmin = false;
+            console.log('profile services - home page')
             if(data.hasOwnProperty('session') && data.session.hasOwnProperty('user')){
+                console.log('profile service - home page - property')
                 let sessions = await sessionsModel.find().regex("session", data.session.user.email);
+                console.log('profile service - home page- property  - after find');
                 if(sessions.length > 0){ //if an existing session is found with the given email
                     notlogged = false;
                     let email = data.session.user.email
@@ -38,7 +41,8 @@ class ProfileService{
     async loggedinUser(data){
         try{ 
             //we will look for existing sessions
-            console.log(data.session)
+            console.log('profile service - logged in user')
+            //console.log(data.session)
             let result = {}
             if(data.hasOwnProperty('session') && data.session.hasOwnProperty('user')){
                 let sessions = await sessionsModel.find().regex("session", data.session.user.email);

@@ -14,16 +14,23 @@ dotenv.config()
 import bcrypt from 'bcrypt'
 
 const LocalStrategy = local.Strategy;
+var callbackURL = 'http://localhost:' + process.env.PORT
+if (typeof window !== "undefined") {
+    callbackURL = window.location.origin
+}
 
 const initPassport = () => {
     passport.use('github', new GitHubStrategy({
         clientID: 'Iv1.98e7aef7032a1fc1',
         clientSecret: process.env.PASSPORT_GITHUB_SECRET,
-        callbackURL: 'http://localhost:8080/api/sessions/githubcallback'
+        callbackURL: callbackURL + '/api/sessions/githubcallback'
     },
     async( accessToken, refreshToken, profile, done) => {
         try{
+            console.log('passport before find one')
+            console.log(profile)
             let user = await usersModel.findOne({email: profile._json.email});
+            console.log('passport after find one')
             if(!user){
                 let new_user = {
                     first_name: profile._json.name,
@@ -112,7 +119,7 @@ const initPassport = () => {
 
     passport.use('login', new LocalStrategy( 
         {passReqToCallback :true , usernameField :'email'},
-
+        
         async(req, email, password, done)=>{
             try{
                 const existing_email = await usersModel.findOne({email});
