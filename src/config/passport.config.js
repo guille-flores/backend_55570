@@ -15,19 +15,13 @@ import bcrypt from 'bcrypt'
 
 const LocalStrategy = local.Strategy;
 var callbackURL = 'http://localhost:' + process.env.PORT
-console.log('Defining Callback URL')
-console.log(callbackURL)
-if (typeof window !== "undefined") {
-    console.log('window')
-    callbackURL = window.location.origin
-}
-console.log(callbackURL)
+
 
 const initPassport = () => {
     passport.use('github', new GitHubStrategy({
         clientID: 'Iv1.98e7aef7032a1fc1',
         clientSecret: process.env.PASSPORT_GITHUB_SECRET,
-        callbackURL: callbackURL + '/api/sessions/githubcallback'
+        callbackURL: '/api/sessions/githubcallback'
     },
     async( accessToken, refreshToken, profile, done) => {
         try{
