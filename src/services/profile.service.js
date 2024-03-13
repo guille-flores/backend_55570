@@ -8,7 +8,6 @@ class ProfileService{
             let isAdmin = false;
             if(data.hasOwnProperty('session') && data.session.hasOwnProperty('user')){
                 let sessions = await sessionsModel.find().regex("session", data.session.user.email);
-                console.log('profile service - home page- property  - after find');
                 if(sessions.length > 0){ //if an existing session is found with the given email
                     notlogged = false;
                     let email = data.session.user.email
